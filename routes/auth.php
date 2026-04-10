@@ -35,16 +35,16 @@ Route::middleware('guest')->group(function () {
     Route::post('register/vehicles', [RegisteredUserController::class, 'storeVehicles'])
         ->name('register.store-vehicles');
 
+    Route::post('register/credentials/save', [RegisteredUserController::class, 'savePartialCredentials'])
+        ->name('register.save-credentials');
+
     Route::post('register/credentials', [RegisteredUserController::class, 'storeCredentials'])
-        ->middleware('throttle:5,1')
         ->name('register.store-credentials');
 
     Route::post('register/resend-code', [RegisteredUserController::class, 'resendCode'])
-        ->middleware('throttle:3,1')
         ->name('register.resend-code');
 
     Route::post('register/verify', [RegisteredUserController::class, 'verifyCode'])
-        ->middleware('throttle:10,1')
         ->name('register.verify-code');
 
     // Registration file serving (temporary signed URL with session validation)
@@ -73,7 +73,7 @@ Route::middleware('guest')->group(function () {
         }
 
         return Storage::disk('private')->response($path);
-    })->middleware(['signed', 'throttle:60,1'])
+    })->middleware(['signed'])
       ->where('path', '.*')
       ->name('register.files.show');
 

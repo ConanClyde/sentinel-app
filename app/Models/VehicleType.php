@@ -13,6 +13,10 @@ class VehicleType extends Model
         'has_plate_number',
     ];
 
+    protected $casts = [
+        'has_plate_number' => 'boolean',
+    ];
+
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);

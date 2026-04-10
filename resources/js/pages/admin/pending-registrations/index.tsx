@@ -35,10 +35,6 @@ interface Props {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: route('dashboard'),
-    },
-    {
         title: 'Pending Approvals',
         href: route('admin.pending-registrations.index'),
     },

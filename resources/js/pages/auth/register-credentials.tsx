@@ -1,6 +1,6 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect, useRef } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -19,14 +19,62 @@ interface CredentialsForm {
 
 interface RegisterCredentialsProps {
     savedEmail?: string;
+    savedPassword?: string;
+    savedPasswordConfirmation?: string;
 }
 
-export default function RegisterCredentials({ savedEmail }: RegisterCredentialsProps) {
+export default function RegisterCredentials({ savedEmail, savedPassword, savedPasswordConfirmation }: RegisterCredentialsProps) {
+    const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const { data, setData, post, processing, errors } = useForm<CredentialsForm>({
         email: savedEmail || '',
-        password: '',
-        password_confirmation: '',
+        password: savedPassword || '',
+        password_confirmation: savedPasswordConfirmation || '',
     });
+
+    // Sync from session when navigating back
+    useEffect(() => {
+        if (savedEmail) setData('email', savedEmail);
+        if (savedPassword) setData('password', savedPassword);
+        if (savedPasswordConfirmation) setData('password_confirmation', savedPasswordConfirmation);
+    }, [savedEmail, savedPassword, savedPasswordConfirmation]);
+
+    // Save credentials to session when user types (debounced)
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const email = e.target.value;
+        setData('email', email);
+
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        if (email && email.includes('@')) {
+            saveTimeout.current = setTimeout(() => {
+                router.post(route('register.save-credentials'), { email }, { replace: true });
+            }, 1000);
+        }
+    };
+
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const password = e.target.value;
+        setData('password', password);
+
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        if (password.length >= 8) {
+            saveTimeout.current = setTimeout(() => {
+                router.post(route('register.save-credentials'), { password }, { replace: true });
+            }, 1000);
+        }
+    };
+
+    const handlePasswordConfirmationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const password_confirmation = e.target.value;
+        setData('password_confirmation', password_confirmation);
+
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        if (password_confirmation) {
+            saveTimeout.current = setTimeout(() => {
+                router.post(route('register.save-credentials'), { password_confirmation }, { replace: true });
+            }, 1000);
+        }
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -66,7 +114,7 @@ export default function RegisterCredentials({ savedEmail }: RegisterCredentialsP
                             tabIndex={1}
                             autoComplete="email"
                             value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
+                            onChange={handleEmailChange}
                             disabled={processing}
                             placeholder="juan@example.com"
                             className="h-12 text-base"
@@ -82,7 +130,7 @@ export default function RegisterCredentials({ savedEmail }: RegisterCredentialsP
                             tabIndex={2}
                             autoComplete="new-password"
                             value={data.password}
-                            onChange={(e) => setData('password', e.target.value)}
+                            onChange={handlePasswordChange}
                             disabled={processing}
                             placeholder="Enter password"
                             className="h-12 text-base"
@@ -112,7 +160,7 @@ export default function RegisterCredentials({ savedEmail }: RegisterCredentialsP
                             tabIndex={3}
                             autoComplete="new-password"
                             value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            onChange={handlePasswordConfirmationChange}
                             disabled={processing}
                             placeholder="Confirm password"
                             className="h-12 text-base"

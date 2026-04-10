@@ -219,13 +219,14 @@ class RegisteredUserController extends Controller
             }
         }
 
-        // Generate signed URLs for saved images (expires in 1 hour for security)
+        // Generate signed URLs for saved images
+        // Note: Session check in route middleware provides security - URL becomes invalid when session is cleared
         $imageFields = ['student_id_image', 'face_scan_data', 'license_image', 'student_school_id_image'];
         foreach ($imageFields as $field) {
             if (!empty($savedData[$field])) {
                 $path = str_replace('/', '|', $savedData[$field]);
                 $encodedPath = urlencode($path);
-                $signedUrl = URL::signedRoute('register.files.show', ['path' => $encodedPath], now()->addHour());
+                $signedUrl = URL::signedRoute('register.files.show', ['path' => $encodedPath]);
                 $savedData[$field] = $signedUrl;
             }
         }
@@ -256,6 +257,8 @@ class RegisteredUserController extends Controller
     {
         return Inertia::render('auth/register-credentials', [
             'savedEmail' => session('registration_email'),
+            'savedPassword' => session('registration_password'),
+            'savedPasswordConfirmation' => session('registration_password_confirmation'),
         ]);
     }
 
@@ -343,6 +346,11 @@ class RegisteredUserController extends Controller
      */
     public function storeName(Request $request): RedirectResponse
     {
+        // Security: Validate previous step completed
+        if (!session('registration_main_role')) {
+            return to_route('register');
+        }
+
         $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
@@ -368,6 +376,11 @@ class RegisteredUserController extends Controller
      */
     public function storeRoleSpecificFields(Request $request): RedirectResponse
     {
+        // Security: Validate previous steps completed
+        if (!session('registration_main_role') || !session('registration_name')) {
+            return to_route('register');
+        }
+
         $mainRole = session('registration_main_role');
 
         $rules = match ($mainRole) {
@@ -450,6 +463,11 @@ class RegisteredUserController extends Controller
      */
     public function storeVehicles(Request $request): RedirectResponse
     {
+        // Security: Validate previous steps completed
+        if (!session('registration_main_role') || !session('registration_name') || !session('registration_role_specific')) {
+            return to_route('register');
+        }
+
         $request->validate([
             'vehicles' => 'required|array|min:1|max:3',
             'vehicles.*.vehicle_type_id' => 'required|exists:vehicle_types,id',
@@ -467,6 +485,28 @@ class RegisteredUserController extends Controller
     private function storeFile($file, string $folder): string
     {
         return $file->store("registrations/{$folder}", 'private');
+    }
+
+    /**
+     * Save partial credentials to session for persistence when navigating.
+     */
+    public function savePartialCredentials(Request $request): RedirectResponse
+    {
+        if ($request->has('email')) {
+            $request->validate(['email' => 'string|lowercase|email|max:255']);
+            session(['registration_email' => strtolower($request->email)]);
+        }
+
+        if ($request->has('password')) {
+            $request->validate(['password' => 'string|min:8']);
+            session(['registration_password' => $request->password]);
+        }
+
+        if ($request->has('password_confirmation')) {
+            session(['registration_password_confirmation' => $request->password_confirmation]);
+        }
+
+        return to_route('register');
     }
 
     /**

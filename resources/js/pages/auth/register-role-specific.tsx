@@ -64,15 +64,12 @@ function CameraPhotoButton({
     }, [capturedFile, savedUrl]);
 
     const openPreview = (url: string) => {
-        // If image already preloaded, show immediately
-        if (imageReady && previewUrl === url) {
-            setViewOpen(true);
-            return;
-        }
-        // Otherwise trigger preload and show modal once ready
+        // Reset and force re-preload
         setImageReady(false);
-        setPreviewUrl(url);
+        setPreviewUrl(null);
         setViewOpen(true);
+        // Small delay to ensure URL change triggers preload
+        setTimeout(() => setPreviewUrl(url), 10);
     };
 
     // Preload image in background
@@ -85,7 +82,6 @@ function CameraPhotoButton({
 
     const closePreview = () => {
         setViewOpen(false);
-        setImageReady(false);
     };
 
     const handleImageLoad = () => {

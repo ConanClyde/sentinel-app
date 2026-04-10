@@ -72,7 +72,6 @@ export default function PendingRegistrationShow({ pendingRegistration }: Props) 
     });
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Dashboard', href: route('dashboard') },
         { title: 'Pending Approvals', href: route('admin.pending-registrations.index') },
         { title: 'Verify Registrant', href: '#' },
     ];

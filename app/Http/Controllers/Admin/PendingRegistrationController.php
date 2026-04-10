@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PendingRegistration;
-use App\Models\PendingVehicle;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\StickerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,7 +23,7 @@ class PendingRegistrationController extends Controller
 
     public function index(): Response
     {
-        $pendingRegistrations = PendingRegistration::with(['roleType', 'vehicles.vehicleType'])
+        $pendingRegistrations = PendingRegistration::with(['roleType', 'college', 'program', 'vehicles.vehicleType'])
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -37,7 +35,7 @@ class PendingRegistrationController extends Controller
 
     public function show(int $id): Response
     {
-        $pending = PendingRegistration::with(['roleType', 'vehicles.vehicleType'])->findOrFail($id);
+        $pending = PendingRegistration::with(['roleType', 'college', 'program', 'vehicles.vehicleType'])->findOrFail($id);
 
         return Inertia::render('admin/pending-registrations/show', [
             'pendingRegistration' => $pending,
@@ -119,7 +117,7 @@ class PendingRegistrationController extends Controller
         // Update pending registration status
         $pending->update([
             'status' => 'approved',
-            'approved_by' => auth()->user()?->id,
+            'approved_by' => auth()->id(),
             'approved_at' => now(),
             'notes' => $request->notes,
         ]);
@@ -138,7 +136,7 @@ class PendingRegistrationController extends Controller
 
         $pending->update([
             'status' => 'rejected',
-            'approved_by' => auth()->user()?->id,
+            'approved_by' => auth()->id(),
             'approved_at' => now(),
             'notes' => $request->notes,
         ]);

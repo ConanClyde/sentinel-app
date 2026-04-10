@@ -50,12 +50,13 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
 
     const isVehicleValid = (index: number) => {
         const v = data.vehicles[index];
-        const type = vehicleTypes.find(t => t.id.toString() === v.vehicle_type_id);
-        const needsPlate = type ? Boolean(type.has_plate_number) : true;
-        
         if (!v || !v.vehicle_type_id) return false;
+
+        const type = vehicleTypes.find(t => t.id.toString() === v.vehicle_type_id);
+        const needsPlate = type ? (type.has_plate_number === true || type.has_plate_number === 1) : true;
+
         if (needsPlate && (!v.plate_number || v.plate_number.trim().length < 3)) return false;
-        
+
         return true;
     };
 
@@ -123,12 +124,12 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                             const vehicleTypeName = vehicleTypes.find(t => t.id.toString() === vehicle.vehicle_type_id)?.name || 'Unknown';
 
                             return (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className={cn(
                                         "relative rounded-lg border transition-all duration-200",
-                                        isDone 
-                                            ? "border-green-500/30 bg-green-500/[0.02] dark:bg-green-500/[0.01] p-3" 
+                                        isDone
+                                            ? "border-green-500/30 bg-green-500/[0.02] dark:bg-green-500/[0.01] p-3"
                                             : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-4"
                                     )}
                                 >
@@ -187,11 +188,11 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                                     {/* Edit Mode Content */}
                                     {!isDone && (() => {
                                         const type = vehicleTypes.find(t => t.id.toString() === vehicle.vehicle_type_id);
-                                        const needsPlate = type ? Boolean(type.has_plate_number) : true;
-                                        
+                                        const needsPlate = type ? (type.has_plate_number === true || type.has_plate_number === 1) : true;
+
                                         return (
                                             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 mt-3">
-                                                <div className={cn("grid gap-3", needsPlate ? "grid-cols-2" : "grid-cols-1")}>
+                                                <div className="grid grid-cols-2 gap-3">
                                                     <div className="flex flex-col gap-1.5">
                                                         <Label htmlFor={`vehicle-type-${index}`} className="text-xs font-bold uppercase tracking-tight text-zinc-400 dark:text-zinc-500 ml-1">
                                                             Type
@@ -200,13 +201,6 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                                                             value={vehicle.vehicle_type_id}
                                                             onValueChange={(value) => {
                                                                 updateVehicle(index, 'vehicle_type_id', value);
-                                                                // Clear plate if new type doesn't need it
-                                                                const newType = vehicleTypes.find(t => t.id.toString() === value);
-                                                                if (newType && !Boolean(newType.has_plate_number)) {
-                                                                    updateVehicle(index, 'plate_number', 'N/A');
-                                                                } else if (vehicle.plate_number === 'N/A') {
-                                                                    updateVehicle(index, 'plate_number', '');
-                                                                }
                                                             }}
                                                             disabled={processing}
                                                         >
@@ -224,23 +218,21 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                                                         <InputError message={formErrors[`vehicles.${index}.vehicle_type_id`]} />
                                                     </div>
 
-                                                    {needsPlate && (
-                                                        <div className="flex flex-col gap-1.5 animate-in fade-in slide-in-from-right-2 duration-300">
-                                                            <Label htmlFor={`plate-${index}`} className="text-xs font-bold uppercase tracking-tight text-zinc-400 dark:text-zinc-500 ml-1">
-                                                                Plate Number
-                                                            </Label>
-                                                            <Input
-                                                                id={`plate-${index}`}
-                                                                type="text"
-                                                                value={vehicle.plate_number}
-                                                                onChange={(e) => updateVehicle(index, 'plate_number', e.target.value.toUpperCase())}
-                                                                placeholder="ABC 123"
-                                                                disabled={processing}
-                                                                className="h-10 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800/50 text-sm uppercase tracking-widest placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-mono rounded-lg shadow-none"
-                                                            />
-                                                            <InputError message={formErrors[`vehicles.${index}.plate_number`]} />
-                                                        </div>
-                                                    )}
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <Label htmlFor={`plate-${index}`} className="text-xs font-bold uppercase tracking-tight text-zinc-400 dark:text-zinc-500 ml-1">
+                                                            Plate Number {!needsPlate && <span className="text-zinc-400">(N/A)</span>}
+                                                        </Label>
+                                                        <Input
+                                                            id={`plate-${index}`}
+                                                            type="text"
+                                                            value={vehicle.plate_number}
+                                                            onChange={(e) => updateVehicle(index, 'plate_number', e.target.value.toUpperCase())}
+                                                            placeholder={needsPlate ? "ABC 123" : "No plate"}
+                                                            disabled={processing || !needsPlate}
+                                                            className="h-10 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800/50 text-sm uppercase tracking-widest placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-mono rounded-lg shadow-none disabled:bg-zinc-100 disabled:text-zinc-400"
+                                                        />
+                                                        <InputError message={formErrors[`vehicles.${index}.plate_number`]} />
+                                                    </div>
                                                 </div>
 
                                                 <Button
@@ -275,13 +267,13 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                         </div>
                     )}
 
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         disabled={processing || !allDone}
                         className={cn(
                             "mt-2 h-12 w-full text-base rounded-lg transition-all active:scale-[0.98] shadow-none",
-                            allDone 
-                                ? "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200" 
+                            allDone
+                                ? "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
                                 : "bg-zinc-100 text-zinc-400 cursor-not-allowed dark:bg-zinc-800 dark:text-zinc-500"
                         )}
                     >
