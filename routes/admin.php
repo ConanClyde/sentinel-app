@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\AdminVehicleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-Route::middleware(['auth', 'role:Administrator'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:Administrator'])->group(function () {
     Route::get('pending-registrations', [PendingRegistrationController::class, 'index'])
         ->name('admin.pending-registrations.index');
 

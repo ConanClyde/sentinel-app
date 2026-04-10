@@ -24,6 +24,9 @@
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
 
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
 
@@ -111,6 +114,8 @@
     --sidebar-accent-foreground: hsl(0, 0%, 30%);
     --sidebar-border: hsl(0, 0%, 91%);
     --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
+    --success: hsl(142.1, 76.2%, 36.3%);
+    --success-foreground: hsl(355.7, 100%, 97.3%);
 }
 
 .dark {
@@ -146,6 +151,8 @@
     --sidebar-accent-foreground: hsl(240, 4.8%, 95.9%);
     --sidebar-border: hsl(0, 0%, 15.9%);
     --sidebar-ring: hsl(217.2, 91.2%, 59.8%);
+    --success: hsl(142.1, 70.6%, 45.3%);
+    --success-foreground: hsl(144.4, 96.6%, 9.1%);
 }
 
 @layer base {
@@ -179,4 +186,43 @@
 [data-sonner-toast] [data-close-button] svg {
     width: 14px;
     height: 14px;
+}
+
+@keyframes scanner-line {
+    0%, 100% { 
+        top: 10%; 
+        opacity: 0.2;
+    }
+    50% { 
+        top: 85%; 
+        opacity: 1;
+    }
+}
+
+@keyframes scanner-pulse {
+    0%, 100% { 
+        stroke-opacity: 0.3;
+        transform: scale(0.98);
+    }
+    50% { 
+        stroke-opacity: 0.8;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes text-ready {
+    0%, 100% { color: #fff; }
+    50% { color: #22c55e; }
+}
+
+.animate-scanner-line {
+    animation: scanner-line 3s ease-in-out infinite;
+}
+
+.animate-scanner-pulse {
+    animation: scanner-pulse 2s ease-in-out infinite;
+}
+
+.animate-text-ready {
+    animation: text-ready 1.5s ease-in-out infinite;
 }

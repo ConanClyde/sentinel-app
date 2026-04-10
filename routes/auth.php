@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::middleware('guest')->group(function () {
     // Registration - single URL with session-based step detection
@@ -45,6 +46,36 @@ Route::middleware('guest')->group(function () {
     Route::post('register/verify', [RegisteredUserController::class, 'verifyCode'])
         ->middleware('throttle:10,1')
         ->name('register.verify-code');
+
+    // Registration file serving (temporary signed URL with session validation)
+    Route::get('register/files/{path}', function ($path) {
+        // Security: Must have active registration session
+        if (!session()->has('registration_main_role')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Decode the URL-encoded path and convert | back to /
+        $path = urldecode($path);
+        $path = str_replace('|', '/', $path);
+
+        // Security: Only allow files from registrations directory
+        if (!str_starts_with($path, 'registrations/')) {
+            abort(403, 'Access denied.');
+        }
+
+        // Security: Prevent directory traversal attacks
+        if (str_contains($path, '..') || str_contains($path, '\\')) {
+            abort(403, 'Invalid path.');
+        }
+
+        if (!Storage::disk('private')->exists($path)) {
+            abort(404, 'File not found.');
+        }
+
+        return Storage::disk('private')->response($path);
+    })->middleware(['signed', 'throttle:60,1'])
+      ->where('path', '.*')
+      ->name('register.files.show');
 
     // Pending Approval (separate URL since it's after verification)
     Route::get('register/pending-approval', function () {

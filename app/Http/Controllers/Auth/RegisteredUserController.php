@@ -9,18 +9,14 @@ use App\Mail\RegistrationVerificationCode;
 use App\Models\College;
 use App\Models\PendingRegistration;
 use App\Models\PendingVehicle;
-use App\Models\Program;
-use App\Models\RegistrationCode;
 use App\Models\RoleType;
 use App\Models\User;
 use App\Models\VehicleType;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,7 +29,7 @@ class RegisteredUserController extends Controller
     public function show(): Response
     {
         $previousUrl = url()->previous();
-        
+
         // If entering the register flow from somewhere else (like login or home), clear partial sessions
         // We ensure previousUrl is not the current URL to avoid wiping on page reloads
         if (!str_contains($previousUrl, '/register') && $previousUrl !== url()->current()) {
@@ -116,7 +112,7 @@ class RegisteredUserController extends Controller
             $newStep = 0;
         }
 
-        // If the user lands back on Step 0 (Role Picker), 
+        // If the user lands back on Step 0 (Role Picker),
         // clear all downstream forms to ensure fresh state if they choose a new role
         if ($newStep === 0) {
             session()->forget([
@@ -210,10 +206,34 @@ class RegisteredUserController extends Controller
      */
     private function renderRoleSpecificForm(string $mainRole): Response
     {
+        $savedData = session('registration_role_specific', []);
+
+        // If stakeholder, ensure subtype is set from Step 1 selection for the dynamic UI logic
+        if ($mainRole === UserRole::STAKEHOLDER->value && empty($savedData['stakeholder_type'])) {
+            $roleTypeId = session('registration_role_type_id');
+            if ($roleTypeId) {
+                $roleType = RoleType::find($roleTypeId);
+                if ($roleType) {
+                    $savedData['stakeholder_type'] = $roleType->name;
+                }
+            }
+        }
+
+        // Generate signed URLs for saved images (expires in 1 hour for security)
+        $imageFields = ['student_id_image', 'face_scan_data', 'license_image', 'student_school_id_image'];
+        foreach ($imageFields as $field) {
+            if (!empty($savedData[$field])) {
+                $path = str_replace('/', '|', $savedData[$field]);
+                $encodedPath = urlencode($path);
+                $signedUrl = URL::signedRoute('register.files.show', ['path' => $encodedPath], now()->addHour());
+                $savedData[$field] = $signedUrl;
+            }
+        }
+
         return Inertia::render('auth/register-role-specific', [
             'role' => $mainRole,
             'colleges' => College::with('programs')->get(),
-            'savedData' => session('registration_role_specific'),
+            'savedData' => $savedData,
         ]);
     }
 

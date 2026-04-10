@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->text('description')->nullable();
+            $table->boolean('has_plate_number')->default(true);
             $table->timestamps();
         });
     }

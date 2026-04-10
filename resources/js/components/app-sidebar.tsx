@@ -1,6 +1,7 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
@@ -11,7 +12,7 @@ export function AppSidebar() {
     const { auth } = usePage<SharedData>().props;
     const userRole = (auth.user as any).role; // 'Administrator', 'Student', etc.
 
-    const mainNavItems: NavItem[] = [
+    const navItems: NavItem[] = [
         {
             title: 'Dashboard',
             url: route('dashboard'),
@@ -20,28 +21,25 @@ export function AppSidebar() {
         },
     ];
 
-    const adminNavItems: NavItem[] = [
-        {
-            title: 'Overview',
-            url: route('dashboard'),
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Pending Approvals',
-            url: route('admin.pending-registrations.index'),
-            icon: ShieldAlert,
-        },
-        {
-            title: 'User Management',
-            url: route('admin.users.index'),
-            icon: Users,
-        },
-        {
-            title: 'Vehicle Registry',
-            url: route('admin.vehicles.index'),
-            icon: Car,
-        },
-    ];
+    if (userRole === 'Administrator') {
+        navItems.push(
+            {
+                title: 'Pending Approvals',
+                url: route('admin.pending-registrations.index'),
+                icon: ShieldAlert,
+            },
+            {
+                title: 'User Management',
+                url: route('admin.users.index'),
+                icon: Users,
+            },
+            {
+                title: 'Vehicle Registry',
+                url: route('admin.vehicles.index'),
+                icon: Car,
+            }
+        );
+    }
 
     const footerNavItems: NavItem[] = [
         {
@@ -71,11 +69,9 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} label="Platform" />
-                
-                {userRole === 'Administrator' && (
-                    <NavMain items={adminNavItems} label="Admin Console" />
-                )}
+                <ScrollArea className="flex-1">
+                    <NavMain items={navItems} label="Platform" />
+                </ScrollArea>
             </SidebarContent>
 
             <SidebarFooter>

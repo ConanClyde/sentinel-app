@@ -1,15 +1,15 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { 
-    Check, 
-    X, 
-    ChevronLeft, 
-    User, 
-    Mail, 
-    IdentificationCard, 
-    Car, 
-    ShieldCheck, 
+import {
+    Check,
+    X,
+    ChevronLeft,
+    User,
+    Mail,
+    IdCard,
+    Car,
+    ShieldCheck,
     FileText,
     ExternalLink,
     AlertTriangle,
@@ -19,14 +19,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogDescription, 
-    DialogFooter, 
-    DialogHeader, 
-    DialogTitle, 
-    DialogTrigger 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,7 +65,7 @@ interface Props {
 
 export default function PendingRegistrationShow({ pendingRegistration }: Props) {
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
-    
+
     const { post: approve, processing: approving } = useForm();
     const { data, setData, post: reject, processing: rejecting, errors } = useForm({
         notes: '',
@@ -155,14 +155,14 @@ export default function PendingRegistrationShow({ pendingRegistration }: Props) 
                         <Card className="border-muted/40 shadow-sm overflow-hidden">
                             <CardHeader className="bg-muted/10 border-b border-muted/20">
                                 <CardTitle className="text-lg flex items-center gap-2">
-                                    <IdentificationCard className="h-5 w-5 text-primary" />
+                                    <IdCard className="h-5 w-5 text-primary" />
                                     Personal Identity
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
                                 <DetailItem label="Full Name" value={`${pendingRegistration.first_name} ${pendingRegistration.middle_name || ''} ${pendingRegistration.surname} ${pendingRegistration.name_extension || ''}`} />
                                 <DetailItem label="Role" value={pendingRegistration.role} />
-                                
+
                                 {pendingRegistration.student_id && (
                                     <>
                                         <DetailItem label="Student ID" value={pendingRegistration.student_id} />
@@ -218,31 +218,31 @@ export default function PendingRegistrationShow({ pendingRegistration }: Props) 
                     {/* Right: Documents */}
                     <div className="lg:col-span-5 flex flex-col gap-6">
                         <h2 className="text-xs font-black text-muted-foreground uppercase tracking-[0.3em] pl-1">Compliance Documents</h2>
-                        
+
                         {/* Document List */}
                         <div className="flex flex-col gap-4">
                             {pendingRegistration.license_image && (
-                                <DocCard 
-                                    label="Driver's License" 
-                                    imageUrl={getFileUrl(pendingRegistration.license_image)} 
+                                <DocCard
+                                    label="Driver's License"
+                                    imageUrl={getFileUrl(pendingRegistration.license_image)}
                                 />
                             )}
                             {pendingRegistration.student_id_image && (
-                                <DocCard 
-                                    label="School ID Card" 
-                                    imageUrl={getFileUrl(pendingRegistration.student_id_image)} 
+                                <DocCard
+                                    label="School ID Card"
+                                    imageUrl={getFileUrl(pendingRegistration.student_id_image)}
                                 />
                             )}
                             {pendingRegistration.face_scan_data && (
-                                <DocCard 
-                                    label="Verification Selfie" 
-                                    imageUrl={getFileUrl(pendingRegistration.face_scan_data)} 
+                                <DocCard
+                                    label="Verification Selfie"
+                                    imageUrl={getFileUrl(pendingRegistration.face_scan_data)}
                                 />
                             )}
                             {pendingRegistration.student_school_id_image && (
-                                <DocCard 
-                                    label="Dependent ID Card" 
-                                    imageUrl={getFileUrl(pendingRegistration.student_school_id_image)} 
+                                <DocCard
+                                    label="Dependent ID Card"
+                                    imageUrl={getFileUrl(pendingRegistration.student_school_id_image)}
                                 />
                             )}
                         </div>
@@ -293,7 +293,7 @@ export default function PendingRegistrationShow({ pendingRegistration }: Props) 
 
                         <div className="h-8 w-px bg-muted/40 mx-2" />
 
-                        <Button 
+                        <Button
                             className="rounded-full h-12 px-10 bg-primary hover:bg-primary/90 text-primary-foreground font-black tracking-tighter shadow-lg shadow-primary/20 transition-all flex items-center gap-2"
                             onClick={handleApprove}
                             disabled={approving || rejecting}
@@ -322,9 +322,9 @@ function DocCard({ label, imageUrl }: { label: string; imageUrl: string }) {
         <Card className="border-muted/40 overflow-hidden group shadow-sm hover:border-primary/30 transition-all">
             <div className="bg-muted/10 p-2 flex items-center justify-between border-b border-muted/20">
                 <span className="text-[10px] font-black uppercase tracking-widest pl-1">{label}</span>
-                <a 
-                    href={imageUrl} 
-                    target="_blank" 
+                <a
+                    href={imageUrl}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="h-6 w-6 rounded bg-background border flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
                 >
@@ -332,10 +332,10 @@ function DocCard({ label, imageUrl }: { label: string; imageUrl: string }) {
                 </a>
             </div>
             <div className="relative aspect-video bg-black/5 flex items-center justify-center overflow-hidden">
-                <img 
-                    src={imageUrl} 
-                    alt={label} 
-                    className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105" 
+                <img
+                    src={imageUrl}
+                    alt={label}
+                    className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>

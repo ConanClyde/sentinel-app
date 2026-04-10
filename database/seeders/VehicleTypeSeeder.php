@@ -10,10 +10,11 @@ class VehicleTypeSeeder extends Seeder
     public function run(): void
     {
         $vehicleTypes = [
-            ['name' => 'Motorcycle', 'description' => 'Two-wheeled motorcycle'],
-            ['name' => 'Car', 'description' => 'Four-wheeled car'],
-            ['name' => 'Tricycle', 'description' => 'Three-wheeled vehicle'],
-            ['name' => 'Electric Vehicle', 'description' => 'Electric-powered vehicle'],
+            ['name' => 'Motorcycle', 'description' => 'Two-wheeled motorcycle', 'has_plate_number' => true],
+            ['name' => 'Car', 'description' => 'Four-wheeled car', 'has_plate_number' => true],
+            ['name' => 'Tricycle', 'description' => 'Three-wheeled vehicle', 'has_plate_number' => true],
+            ['name' => 'Electric Car', 'description' => 'Electric-powered four-wheeled car', 'has_plate_number' => true],
+            ['name' => 'Electric Bike', 'description' => 'Electric-powered two-wheeled bike', 'has_plate_number' => false],
         ];
 
         foreach ($vehicleTypes as $type) {

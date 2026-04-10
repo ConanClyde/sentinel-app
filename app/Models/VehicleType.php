@@ -10,6 +10,7 @@ class VehicleType extends Model
     protected $fillable = [
         'name',
         'description',
+        'has_plate_number',
     ];
 
     public function vehicles(): HasMany
