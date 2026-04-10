@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\Settings\PasswordController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -27,8 +29,16 @@ Route::middleware(['auth'])->group(function () {
             default => Inertia::render('dashboard'),
         };
     })->name('dashboard');
+
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('settings', function () {
+        return Inertia::render('settings');
+    })->name('settings');
+
+    Route::put('settings/password', [PasswordController::class, 'update'])->name('password.update');
 });
 
-require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

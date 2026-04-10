@@ -3,6 +3,10 @@
 use App\Http\Controllers\Admin\PendingRegistrationController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminVehicleController;
+use App\Http\Controllers\Admin\AdminReportsController;
+use App\Http\Controllers\Admin\AdminStickersController;
+use App\Http\Controllers\Admin\AdminMapController;
+use App\Http\Controllers\Admin\AdminPatrolController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,6 +35,22 @@ Route::middleware(['auth', 'role:Administrator'])->group(function () {
     // Vehicle Registry
     Route::get('vehicles', [AdminVehicleController::class, 'index'])
         ->name('admin.vehicles.index');
+
+    // Reports
+    Route::get('reports', [AdminReportsController::class, 'index'])
+        ->name('admin.reports.index');
+
+    // Stickers
+    Route::get('stickers', [AdminStickersController::class, 'index'])
+        ->name('admin.stickers.index');
+
+    // Campus Map
+    Route::get('map', [AdminMapController::class, 'index'])
+        ->name('admin.map.index');
+
+    // Patrol Monitor
+    Route::get('patrol', [AdminPatrolController::class, 'index'])
+        ->name('admin.patrol.index');
 
     // Secure File Access
     Route::get('files/{path}', function ($path) {

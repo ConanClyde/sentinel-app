@@ -56,7 +56,7 @@ export default function Login({ canResetPassword }: LoginProps) {
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                             placeholder="juan@example.com"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.email} />
                     </div>
@@ -78,7 +78,7 @@ export default function Login({ canResetPassword }: LoginProps) {
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             placeholder="Password"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.password} />
                     </div>
@@ -96,7 +96,7 @@ export default function Login({ canResetPassword }: LoginProps) {
                         </Label>
                     </div>
 
-                    <Button type="submit" className="mt-2 h-12 w-full text-base transition-transform active:scale-[0.98]" tabIndex={4} disabled={processing}>
+                    <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" tabIndex={4} disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Log in
                     </Button>

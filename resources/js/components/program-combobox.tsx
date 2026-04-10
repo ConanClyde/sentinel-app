@@ -100,7 +100,7 @@ export function ProgramCombobox({
                     aria-expanded={open}
                     disabled={disabled}
                     className={cn(
-                        'h-12 w-full justify-between text-base font-normal',
+                        'h-10 w-full justify-between font-normal',
                         !value && 'text-muted-foreground',
                         error && 'border-destructive'
                     )}
@@ -109,7 +109,7 @@ export function ProgramCombobox({
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-0 p-0 z-50 max-h-[300px] overflow-hidden" align="start">
+            <PopoverContent className="w-[var(--radix-popover-trigger-width)] min-w-0 p-0 z-50 max-h-[300px] overflow-hidden rounded-xl" align="start">
                 <Command shouldFilter={false}>
                     <CommandInput
                         placeholder="Search program..."

@@ -100,14 +100,14 @@ function CameraPhotoButton({
                     if (file && onUpload) onUpload(file);
                 }}
             />
-            <div className="flex w-full border border-input bg-background rounded-md overflow-hidden transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+            <div className="flex w-full border border-input bg-background rounded-lg overflow-hidden transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
                 {/* Left main area */}
                 {hasPhoto ? (
                     <button
                         type="button"
                         disabled={disabled}
                         onClick={() => previewUrl && openPreview(previewUrl)}
-                        className="flex-1 flex items-center gap-2.5 px-3 h-12 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50"
+                        className="flex-1 flex items-center gap-2.5 px-3 h-10 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50"
                     >
                         <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
                         <span className="text-foreground font-medium">Photo captured</span>
@@ -118,7 +118,7 @@ function CameraPhotoButton({
                             type="button"
                             disabled={disabled}
                             onClick={onCapture}
-                            className="flex-1 flex items-center gap-2.5 px-3 h-12 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50 border-r border-input/50"
+                            className="flex-1 flex items-center gap-2.5 px-3 h-10 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50"
                         >
                             <Camera className="h-4 w-4 shrink-0 text-muted-foreground" />
                             <span>Take Photo</span>
@@ -129,17 +129,11 @@ function CameraPhotoButton({
                                 type="button"
                                 disabled={disabled}
                                 onClick={() => fileInputRef.current?.click()}
-                                className="flex-1 flex items-center gap-2.5 px-3 h-12 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50"
+                                className="flex-1 flex items-center gap-2.5 px-3 h-10 text-sm font-normal text-left truncate hover:bg-muted/40 transition-colors disabled:opacity-50 border-l border-input/50"
                             >
                                 <Upload className="h-4 w-4 shrink-0 text-muted-foreground" />
                                 <span>Upload</span>
                             </button>
-                        )}
-
-                        {!onUpload && (
-                            <div className="flex items-center gap-2.5 px-3 h-12 text-sm font-normal text-muted-foreground truncate">
-                                <span>{placeholder}</span>
-                            </div>
                         )}
                     </div>
                 )}
@@ -152,7 +146,7 @@ function CameraPhotoButton({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className="h-12 w-10 shrink-0 rounded-none border-l border-input text-muted-foreground hover:text-foreground"
+                                className="h-10 w-10 shrink-0 rounded-none border-l border-input text-muted-foreground hover:text-foreground"
                                 aria-label="Photo options"
                             >
                                 <MoreVertical className="h-4 w-4" />
@@ -206,7 +200,7 @@ function CameraPhotoButton({
                         <img
                             src={previewUrl}
                             alt="Photo preview"
-                            className="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl border border-white/10"
+                            className="max-w-full max-h-[85vh] rounded-lg object-contain shadow-2xl border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                             onLoad={handleImageLoad}
                         />
@@ -341,7 +335,7 @@ export default function RegisterRoleSpecific({ role, colleges, savedData }: Regi
                                     onChange={(e) => setData('student_id', e.target.value)}
                                     disabled={processing}
                                     placeholder="e.g., 2023-12345"
-                                    className="h-12 text-base"
+                                    className="h-10 text-base"
                                 />
                                 <InputError message={errors.student_id} />
                             </div>
@@ -390,7 +384,7 @@ export default function RegisterRoleSpecific({ role, colleges, savedData }: Regi
                                 onChange={(e) => setData('staff_id', e.target.value)}
                                 disabled={processing}
                                 placeholder="e.g., FAC-001"
-                                className="h-12 text-base"
+                                className="h-10 text-base"
                             />
                             <InputError message={errors.staff_id} />
                         </div>
@@ -447,7 +441,7 @@ export default function RegisterRoleSpecific({ role, colleges, savedData }: Regi
                         <InputError message={errors.license_image} />
                     </div>
 
-                    <Button type="submit" className="mt-2 h-12 w-full text-base transition-transform active:scale-[0.98]" disabled={processing}>
+                    <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Continue
                     </Button>

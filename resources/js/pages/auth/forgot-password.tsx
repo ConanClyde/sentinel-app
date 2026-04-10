@@ -38,12 +38,12 @@ export default function ForgotPassword() {
                             autoFocus
                             onChange={(e) => setData('email', e.target.value)}
                             placeholder="juan@example.com"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.email} />
                     </div>
 
-                    <Button className="mt-6 h-12 w-full text-base transition-transform active:scale-[0.98]" disabled={processing}>
+                    <Button className="mt-6 h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Send reset code
                     </Button>

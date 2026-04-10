@@ -78,7 +78,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                             onChange={(e) => setData('first_name', e.target.value)}
                             disabled={processing}
                             placeholder="Juan"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.first_name} />
                     </div>
@@ -96,7 +96,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                             onChange={(e) => setData('middle_name', e.target.value)}
                             disabled={processing}
                             placeholder="Santos"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.middle_name} />
                     </div>
@@ -113,7 +113,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                             onChange={(e) => setData('surname', e.target.value)}
                             disabled={processing}
                             placeholder="Dela Cruz"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.surname} />
                     </div>
@@ -123,7 +123,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                             Name extension <span className="text-muted-foreground">(optional)</span>
                         </Label>
                         <Select value={data.name_extension || undefined} onValueChange={(value) => setData('name_extension', value)} disabled={processing}>
-                            <SelectTrigger className="h-12 text-base" tabIndex={4}>
+                            <SelectTrigger className="h-10" tabIndex={4}>
                                 <SelectValue placeholder="Select..." />
                             </SelectTrigger>
                             <SelectContent className="w-[var(--radix-select-trigger-width)]">
@@ -138,7 +138,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                         <InputError message={errors.name_extension} />
                     </div>
 
-                    <Button type="submit" className="mt-2 h-12 w-full text-base transition-transform active:scale-[0.98]" tabIndex={5} disabled={processing}>
+                    <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" tabIndex={5} disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Continue
                     </Button>

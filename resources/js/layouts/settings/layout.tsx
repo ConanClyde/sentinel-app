@@ -8,61 +8,64 @@ import { Link } from '@inertiajs/react';
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
     const sidebarNavItems: NavItem[] = [
         {
-            title: 'Profile',
+            title: 'Profile Content',
             url: route('profile.edit'),
             icon: null,
         },
         {
-            title: 'Password',
+            title: 'Security',
             url: route('password.edit'),
             icon: null,
         },
         {
-            title: 'Appearance',
+            title: 'App Appearance',
             url: route('appearance'),
             icon: null,
         },
     ];
 
     return (
-        <div className="px-4 py-6">
-            <Heading title="Settings" description="Manage your profile and account settings" />
+        <div className="flex flex-col gap-8 px-4 py-8 md:px-8 lg:px-12 max-w-7xl mx-auto w-full">
+            <div className="flex flex-col gap-1">
+                <h1 className="text-3xl font-black tracking-tighter text-foreground uppercase">Settings</h1>
+                <p className="text-muted-foreground text-base">Configure your personal identity and security preferences.</p>
+            </div>
 
-            <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-                <aside className="w-full max-w-xl lg:w-48">
-                    <nav className="flex flex-col space-y-1 space-x-0">
+            <Separator className="bg-muted/40" />
+
+            <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-16">
+                <aside className="lg:w-64">
+                    <nav className="flex flex-col gap-1.5">
                         {sidebarNavItems.map((item) => {
-                            const isActive = route().current(item.url.split('/').pop()?.split('.').shift() || ''); 
-                            // Simplified isActive check since route names are like 'profile.edit'
-                            // Let's do a better check.
                             const isActiveRoute = 
-                                (item.title === 'Profile' && route().current('profile.edit')) ||
-                                (item.title === 'Password' && route().current('password.edit')) ||
-                                (item.title === 'Appearance' && route().current('appearance'));
+                                (item.title === 'Profile Content' && route().current('profile.edit')) ||
+                                (item.title === 'Security' && route().current('password.edit')) ||
+                                (item.title === 'App Appearance' && route().current('appearance'));
 
                             return (
-                                <Button
+                                <Link
                                     key={item.url}
-                                    size="sm"
-                                    variant="ghost"
-                                    asChild
-                                    className={cn('w-full justify-start', {
-                                        'bg-muted font-medium': isActiveRoute,
-                                    })}
+                                    href={item.url}
+                                    prefetch
+                                    className={cn(
+                                        'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all group',
+                                        isActiveRoute 
+                                            ? 'bg-primary text-primary-foreground' 
+                                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                    )}
                                 >
-                                    <Link href={item.url} prefetch>
-                                        {item.title}
-                                    </Link>
-                                </Button>
+                                    <span className="flex-1 tracking-tight">{item.title}</span>
+                                    {isActiveRoute && <div className="h-1.5 w-1.5 rounded-full bg-primary-foreground animate-in zoom-in duration-300" />}
+                                </Link>
                             );
                         })}
                     </nav>
                 </aside>
 
-                <Separator className="my-6 md:hidden" />
-
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">{children}</section>
+                <div className="flex-1 lg:max-w-3xl">
+                    <section className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        {children}
+                    </section>
                 </div>
             </div>
         </div>

@@ -20,7 +20,7 @@ export default function AuthSimpleLayout({ children, title, description, backHre
     useFlashToast();
 
     return (
-        <div className="bg-background flex min-h-screen flex-col items-center justify-center overflow-y-auto px-4 py-8 pb-[env(safe-area-inset-bottom)] md:px-6 lg:justify-center lg:py-0">
+        <div className="bg-background flex min-h-screen flex-col items-center justify-center overflow-y-auto p-6 lg:p-8 pb-[env(safe-area-inset-bottom)] lg:justify-center">
             {/* Back/Home button - fixed position for mobile */}
             <div className="fixed left-4 top-4 z-50 md:left-6 md:top-6">
                 <Link href={backHref || route('home')}>
@@ -40,7 +40,7 @@ export default function AuthSimpleLayout({ children, title, description, backHre
                 {/* Logo and title section */}
                 <div className="flex flex-col items-center gap-4">
                     <Link href={route('home')} className="flex flex-col items-center gap-2 font-medium">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-transform active:scale-95">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 transition-transform active:scale-95">
                             <AppLogoIcon className="size-7 fill-current text-[var(--foreground)] dark:text-white" />
                         </div>
                         <span className="sr-only">Sentinel Home</span>

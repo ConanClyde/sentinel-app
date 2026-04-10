@@ -56,7 +56,7 @@ export default function ResetPassword() {
                             name="password"
                             autoComplete="new-password"
                             value={data.password}
-                            className="h-12 text-base"
+                            className="h-10"
                             onChange={(e) => setData('password', e.target.value)}
                             placeholder="Password"
                             autoFocus
@@ -85,14 +85,14 @@ export default function ResetPassword() {
                             name="password_confirmation"
                             autoComplete="new-password"
                             value={data.password_confirmation}
-                            className="h-12 text-base"
+                            className="h-10"
                             onChange={(e) => setData('password_confirmation', e.target.value)}
                             placeholder="Confirm password"
                         />
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button type="submit" className="mt-2 h-12 w-full text-base transition-transform active:scale-[0.98]" disabled={processing}>
+                    <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Reset password
                     </Button>

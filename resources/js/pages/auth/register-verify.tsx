@@ -108,7 +108,7 @@ export default function RegisterVerify() {
                         <InputError message={errors.code} className="text-center" />
                     </div>
 
-                    <Button type="submit" className="h-12 w-full text-base transition-transform active:scale-[0.98]" disabled={processing || data.code.length !== 6}>
+                    <Button type="submit" className="h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing || data.code.length !== 6}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Verify
                     </Button>
@@ -127,6 +127,7 @@ export default function RegisterVerify() {
                             }}
                             disabled={processing || resending}
                         >
+                            {resending && <LoaderCircle className="h-4 w-4 animate-spin mr-2" />}
                             {resending ? 'Sending...' : 'Resend code'}
                         </button>
                     </div>

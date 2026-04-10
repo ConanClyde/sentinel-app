@@ -19,7 +19,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('settings/profile', [
+        return Inertia::render('profile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'nameExtensions' => NameExtension::options(),
         ]);
@@ -38,7 +38,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return to_route('profile.edit')->with('success', 'Profile updated successfully.');
+        return to_route('profile')->with('success', 'Profile updated successfully.');
     }
 
     /**

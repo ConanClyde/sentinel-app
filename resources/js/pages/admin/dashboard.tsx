@@ -1,12 +1,12 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { 
-    Users, 
-    Car, 
-    Clock, 
-    CheckCircle2, 
-    ChevronRight, 
+import {
+    Users,
+    Car,
+    Clock,
+    CheckCircle2,
+    ChevronRight,
     ArrowUpRight,
     Search,
     UserPlus,
@@ -39,16 +39,16 @@ export default function AdminDashboard({ stats }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Admin Dashboard" />
-            
-            <div className="flex flex-col gap-6 p-6">
+
+            <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6">
                 {/* Header Section */}
-                <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, Admin</h1>
-                    <p className="text-muted-foreground text-lg">Here's a summary of campus registration activity today.</p>
+                <div className="flex flex-col gap-1.5">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Welcome back, Admin</h1>
+                    <p className="text-muted-foreground text-base sm:text-lg">Here's a summary of campus registration activity today.</p>
                 </div>
 
                 {/* Main Stats Grid */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                     <Card className="relative overflow-hidden border-none bg-gradient-to-br from-orange-500/10 to-orange-500/5 dark:from-orange-500/20 dark:to-orange-500/10 shadow-sm transition-all hover:shadow-md">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-sm font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">
@@ -61,10 +61,10 @@ export default function AdminDashboard({ stats }: DashboardProps) {
                             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 font-medium">
                                 <span className="text-orange-500">+2 since yesterday</span>
                             </p>
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                asChild 
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                asChild
                                 className="absolute bottom-4 right-4 h-8 text-orange-600 hover:text-orange-700 hover:bg-orange-500/10"
                             >
                                 <Link href={route('admin.pending-registrations.index')}>
@@ -101,9 +101,9 @@ export default function AdminDashboard({ stats }: DashboardProps) {
                     </Card>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
                     {/* Recent Activity Table */}
-                    <Card className="lg:col-span-4 border-muted/40 shadow-sm">
+                    <Card className="md:col-span-2 lg:col-span-4 border-muted/40 shadow-sm">
                         <CardHeader>
                             <CardTitle>Recent Submissions</CardTitle>
                             <CardDescription>The latest registration attempts requiring review.</CardDescription>
@@ -145,7 +145,7 @@ export default function AdminDashboard({ stats }: DashboardProps) {
                     </Card>
 
                     {/* Quick Tools Section */}
-                    <div className="lg:col-span-3 flex flex-col gap-6">
+                    <div className="md:col-span-2 lg:col-span-3 flex flex-col gap-4 sm:gap-6">
                         <Card className="border-muted/40 shadow-sm bg-primary/[0.02]">
                             <CardHeader>
                                 <CardTitle className="text-lg">Quick Tools</CardTitle>

@@ -1,5 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
+import { X, AlertTriangle, AlertCircle } from 'lucide-react';
 
 // Components...
 import InputError from '@/components/input-error';
@@ -9,7 +10,7 @@ import { Label } from '@/components/ui/label';
 
 import HeadingSmall from '@/components/heading-small';
 
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
@@ -32,28 +33,45 @@ export default function DeleteUser() {
     };
 
     return (
-        <div className="space-y-6">
-            <HeadingSmall title="Delete account" description="Delete your account and all of its resources" />
-            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
+        <div className="space-y-6 pt-8 border-t border-muted/30">
+            <HeadingSmall title="Security Zone: Delete Account" description="Deleting your account is a permanent action that removes all associated vehicle registries and credentials." />
+            
+            <div className="group relative space-y-4 rounded-xl border border-red-200/50 bg-red-50/50 p-6 dark:border-red-500/10 dark:bg-red-500/5 overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                    <X className="h-24 w-24 text-red-500" />
+                </div>
+                
+                <div className="relative space-y-2">
+                    <p className="font-black uppercase tracking-[0.2em] text-xs text-red-600 dark:text-red-500 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Critical Security Alert
+                    </p>
+                    <p className="text-sm font-medium text-muted-foreground leading-relaxed max-w-md">
+                        Once your account is purged, all of its digital assets, verified IDs, and registration history will be 
+                        <span className="text-foreground font-bold italic ml-1 underline decoration-red-500/30">deleted forever</span>.
+                    </p>
                 </div>
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="destructive">Delete account</Button>
+                        <Button variant="destructive" className="h-10 px-8 rounded-xl font-black uppercase tracking-widest text-[10px]">
+                            Initialize Account Purge
+                        </Button>
                     </DialogTrigger>
-                    <DialogContent>
-                        <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
-                        <DialogDescription>
-                            Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password
-                            to confirm you would like to permanently delete your account.
-                        </DialogDescription>
-                        <form className="space-y-6" onSubmit={deleteUser}>
-                            <div className="grid gap-2">
-                                <Label htmlFor="password" className="sr-only">
-                                    Password
+                    <DialogContent className="sm:max-w-[425px] rounded-xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black tracking-tight text-red-600 flex items-center gap-2">
+                                <AlertCircle className="h-6 w-6" />
+                                Confirm Deletion
+                            </DialogTitle>
+                            <DialogDescription className="text-sm font-medium">
+                                To proceed with the purge, please authenticate your session by entering your current password below.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form className="space-y-6 pt-4" onSubmit={deleteUser}>
+                            <div className="grid gap-3">
+                                <Label htmlFor="password" className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
+                                    Account Password
                                 </Label>
 
                                 <Input
@@ -63,22 +81,23 @@ export default function DeleteUser() {
                                     ref={passwordInput}
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
-                                    placeholder="Password"
+                                    placeholder="Enter password to confirm"
+                                    className="h-12 bg-muted/30 border-muted/60 focus:border-red-500/50 focus:ring-red-500/20 rounded-xl"
                                     autoComplete="current-password"
                                 />
 
                                 <InputError message={errors.password} />
                             </div>
 
-                            <DialogFooter>
+                            <DialogFooter className="gap-3 sm:gap-0 sm:flex-row flex-col">
                                 <DialogClose asChild>
-                                    <Button variant="secondary" onClick={closeModal}>
-                                        Cancel
+                                    <Button variant="ghost" onClick={closeModal} className="font-bold rounded-xl h-11">
+                                        Abort Request
                                     </Button>
                                 </DialogClose>
 
-                                <Button variant="destructive" disabled={processing} asChild>
-                                    <button type="submit">Delete account</button>
+                                <Button variant="destructive" disabled={processing} className="font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl" asChild>
+                                    <button type="submit">Execute Purge</button>
                                 </Button>
                             </DialogFooter>
                         </form>

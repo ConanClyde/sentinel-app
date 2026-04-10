@@ -21,7 +21,7 @@ class ProfileUpdateRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:255'],
             'middle_name' => ['nullable', 'string', 'max:255'],
             'surname' => ['required', 'string', 'max:255'],
-            'name_extension' => ['nullable', 'string', Rule::in(NameExtension::values())],
+            'name_extension' => ['nullable', 'string', Rule::in(array_merge([''], NameExtension::values()))],
 
             'email' => [
                 'required',

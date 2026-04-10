@@ -72,7 +72,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'name_extension' => NameExtension::class,
         ];
     }
 
@@ -100,7 +99,7 @@ class User extends Authenticatable
         $parts[] = $this->surname;
 
         if ($this->name_extension) {
-            $parts[] = $this->name_extension->value;
+            $parts[] = $this->name_extension;
         }
 
         return implode(' ', $parts);

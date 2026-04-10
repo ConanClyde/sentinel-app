@@ -79,7 +79,7 @@ export default function RegisterRoleType({ roleTypes, savedRoleTypeId }: Registe
 
                 <Button
                     type="submit"
-                    className="h-12 w-full text-base transition-transform active:scale-[0.98]"
+                    className="h-10 w-full rounded-lg transition-all active:scale-[0.98]"
                     disabled={processing || !data.role_type_id}
                 >
                     {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}

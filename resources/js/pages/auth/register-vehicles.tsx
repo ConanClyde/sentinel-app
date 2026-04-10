@@ -140,7 +140,7 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                                                 "flex h-7 w-7 items-center justify-center rounded-lg",
                                                 isDone ? "bg-green-500/10 text-green-500" : "bg-primary/10 text-primary"
                                             )}>
-                                                {isDone ? <Check className="h-3.5 w-3.5" /> : <Car className="h-3.5 w-3.5" />}
+                                                {isDone ? <Check className="h-3.5 w-3.5 rounded-lg" /> : <Car className="h-3.5 w-3.5 rounded-lg" />}
                                             </div>
                                             <div>
                                                 <span className={cn(
@@ -271,7 +271,7 @@ export default function RegisterVehicles({ vehicleTypes, role, savedVehicles }: 
                         type="submit"
                         disabled={processing || !allDone}
                         className={cn(
-                            "mt-2 h-12 w-full text-base rounded-lg transition-all active:scale-[0.98] shadow-none",
+                            "mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98] shadow-none",
                             allDone
                                 ? "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
                                 : "bg-zinc-100 text-zinc-400 cursor-not-allowed dark:bg-zinc-800 dark:text-zinc-500"

@@ -117,7 +117,7 @@ export default function RegisterCredentials({ savedEmail, savedPassword, savedPa
                             onChange={handleEmailChange}
                             disabled={processing}
                             placeholder="juan@example.com"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.email} />
                     </div>
@@ -133,7 +133,7 @@ export default function RegisterCredentials({ savedEmail, savedPassword, savedPa
                             onChange={handlePasswordChange}
                             disabled={processing}
                             placeholder="Enter password"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         {data.password && (
                             <div className="flex items-center gap-2">
@@ -163,12 +163,12 @@ export default function RegisterCredentials({ savedEmail, savedPassword, savedPa
                             onChange={handlePasswordConfirmationChange}
                             disabled={processing}
                             placeholder="Confirm password"
-                            className="h-12 text-base"
+                            className="h-10"
                         />
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button type="submit" className="mt-2 h-12 w-full text-base transition-transform active:scale-[0.98]" tabIndex={4} disabled={processing}>
+                    <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" tabIndex={4} disabled={processing}>
                         {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
                         Continue
                     </Button>
