@@ -11,12 +11,14 @@ use App\Models\PendingRegistration;
 use App\Models\PendingVehicle;
 use App\Models\RoleType;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Models\VehicleType;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,7 +34,7 @@ class RegisteredUserController extends Controller
 
         // If entering the register flow from somewhere else (like login or home), clear partial sessions
         // We ensure previousUrl is not the current URL to avoid wiping on page reloads
-        if (!str_contains($previousUrl, '/register') && $previousUrl !== url()->current()) {
+        if (! str_contains($previousUrl, '/register') && $previousUrl !== url()->current()) {
             session()->forget([
                 'registration_main_role',
                 'registration_requires_approval',
@@ -41,9 +43,10 @@ class RegisteredUserController extends Controller
                 'registration_role_specific',
                 'registration_vehicles',
                 'registration_email',
+                'registration_password_hash',
                 'pending_registration_id',
                 'registration_step',
-                'registration_completed_recently'
+                'registration_completed_recently',
             ]);
         }
 
@@ -61,7 +64,7 @@ class RegisteredUserController extends Controller
         // Determine step based on data availability
         $dataStep = 0; // role selection
         if ($mainRole) {
-            if ($mainRole === UserRole::STAKEHOLDER->value && !$roleTypeId) {
+            if ($mainRole === UserRole::STAKEHOLDER->value && ! $roleTypeId) {
                 $dataStep = 1; // role type
             } else {
                 $dataStep = 2; // name
@@ -71,7 +74,7 @@ class RegisteredUserController extends Controller
                         $dataStep = 4; // vehicles
                         if ($vehicles) {
                             $dataStep = 5; // credentials
-                            if ($pendingId) {
+                            if (session('registration_email')) {
                                 $dataStep = 6; // verify
                             }
                         }
@@ -121,6 +124,7 @@ class RegisteredUserController extends Controller
                 'registration_role_specific',
                 'registration_vehicles',
                 'registration_email',
+                'registration_password_hash',
             ]);
         }
 
@@ -137,7 +141,7 @@ class RegisteredUserController extends Controller
     {
         $allowedRoles = [UserRole::STUDENT, UserRole::STAFF, UserRole::STAKEHOLDER];
 
-        $mainRoles = collect($allowedRoles)->map(fn($role) => [
+        $mainRoles = collect($allowedRoles)->map(fn ($role) => [
             'value' => $role->value,
             'label' => $role->label(),
             'requiresApproval' => $role->requiresApproval(),
@@ -172,7 +176,7 @@ class RegisteredUserController extends Controller
         $roleTypes = RoleType::where('main_role', UserRole::STAKEHOLDER->value)->get();
 
         return Inertia::render('auth/register-role-type', [
-            'roleTypes' => $roleTypes->map(fn($type) => [
+            'roleTypes' => $roleTypes->map(fn ($type) => [
                 'value' => $type->id,
                 'name' => $type->name,
                 'description' => $type->description,
@@ -221,9 +225,9 @@ class RegisteredUserController extends Controller
 
         // Generate signed URLs for saved images
         // Note: Session check in route middleware provides security - URL becomes invalid when session is cleared
-        $imageFields = ['student_id_image', 'face_scan_data', 'license_image', 'student_school_id_image'];
+        $imageFields = ['student_id_image', 'staff_id_image', 'face_scan_data', 'license_image', 'student_school_id_image'];
         foreach ($imageFields as $field) {
-            if (!empty($savedData[$field])) {
+            if (! empty($savedData[$field])) {
                 $path = str_replace('/', '|', $savedData[$field]);
                 $encodedPath = urlencode($path);
                 $signedUrl = URL::signedRoute('register.files.show', ['path' => $encodedPath]);
@@ -257,8 +261,6 @@ class RegisteredUserController extends Controller
     {
         return Inertia::render('auth/register-credentials', [
             'savedEmail' => session('registration_email'),
-            'savedPassword' => session('registration_password'),
-            'savedPasswordConfirmation' => session('registration_password_confirmation'),
         ]);
     }
 
@@ -298,6 +300,7 @@ class RegisteredUserController extends Controller
 
         // Skip role type for Student/Staff, go to name form
         session(['registration_step' => 2]);
+
         return to_route('register');
     }
 
@@ -334,6 +337,7 @@ class RegisteredUserController extends Controller
             'registration_role_specific',
             'registration_vehicles',
             'registration_email',
+            'registration_password_hash',
             'pending_registration_id',
             'registration_step',
         ]);
@@ -347,7 +351,7 @@ class RegisteredUserController extends Controller
     public function storeName(Request $request): RedirectResponse
     {
         // Security: Validate previous step completed
-        if (!session('registration_main_role')) {
+        if (! session('registration_main_role')) {
             return to_route('register');
         }
 
@@ -377,7 +381,7 @@ class RegisteredUserController extends Controller
     public function storeRoleSpecificFields(Request $request): RedirectResponse
     {
         // Security: Validate previous steps completed
-        if (!session('registration_main_role') || !session('registration_name')) {
+        if (! session('registration_main_role') || ! session('registration_name')) {
             return to_route('register');
         }
 
@@ -394,12 +398,13 @@ class RegisteredUserController extends Controller
             ],
             UserRole::STAFF->value => [
                 'staff_id' => 'required|string|max:50',
+                'staff_id_image' => ! session('registration_role_specific.staff_id_image') ? 'required|image|max:5120' : 'nullable|image|max:5120',
                 'face_scan_data' => session('registration_role_specific.face_scan_data') ? 'nullable|image|max:5120' : 'required|image|max:5120',
                 'license_image' => 'nullable|image|max:5120',
             ],
             UserRole::STAKEHOLDER->value => [
                 'stakeholder_type' => 'required|string|in:Guardian,Service Provider,Visitor',
-                'student_school_id_image' => request('stakeholder_type') === 'Guardian' && !session('registration_role_specific.student_school_id_image') ? 'required|image|max:5120' : 'nullable|image|max:5120',
+                'student_school_id_image' => request('stakeholder_type') === 'Guardian' && ! session('registration_role_specific.student_school_id_image') ? 'required|image|max:5120' : 'nullable|image|max:5120',
                 'face_scan_data' => session('registration_role_specific.face_scan_data') ? 'nullable|image|max:5120' : 'required|image|max:5120',
                 'license_image' => 'nullable|image|max:5120',
             ],
@@ -429,6 +434,9 @@ class RegisteredUserController extends Controller
         } elseif ($mainRole === UserRole::STAFF->value) {
             $roleSpecificData = [
                 'staff_id' => $request->staff_id,
+                'staff_id_image' => $request->hasFile('staff_id_image')
+                    ? $this->storeFile($request->file('staff_id_image'), 'staff-ids')
+                    : session('registration_role_specific.staff_id_image'),
                 'face_scan_data' => $request->hasFile('face_scan_data')
                     ? $this->storeFile($request->file('face_scan_data'), 'face-scans')
                     : session('registration_role_specific.face_scan_data'),
@@ -464,7 +472,7 @@ class RegisteredUserController extends Controller
     public function storeVehicles(Request $request): RedirectResponse
     {
         // Security: Validate previous steps completed
-        if (!session('registration_main_role') || !session('registration_name') || !session('registration_role_specific')) {
+        if (! session('registration_main_role') || ! session('registration_name') || ! session('registration_role_specific')) {
             return to_route('register');
         }
 
@@ -473,6 +481,40 @@ class RegisteredUserController extends Controller
             'vehicles.*.vehicle_type_id' => 'required|exists:vehicle_types,id',
             'vehicles.*.plate_number' => 'nullable|string|max:20',
         ]);
+
+        // Collect submitted plate numbers (non-empty, normalised to uppercase)
+        $submittedPlates = collect($request->vehicles)
+            ->pluck('plate_number')
+            ->filter(fn ($p) => ! empty(trim((string) $p)))
+            ->map(fn ($p) => strtoupper(trim($p)));
+
+        // 1. Check for duplicates within the submitted batch
+        if ($submittedPlates->count() !== $submittedPlates->unique()->count()) {
+            return back()
+                ->withErrors(['vehicles' => 'You have entered the same plate number more than once.'])
+                ->withInput()
+                ->with('error', 'You have entered the same plate number more than once.');
+        }
+
+        // 2. Check against already-registered vehicles
+        $existingVehicle = Vehicle::whereIn('plate_number', $submittedPlates)->first();
+        if ($existingVehicle) {
+            return back()
+                ->withErrors(['vehicles' => "Plate number \"{$existingVehicle->plate_number}\" is already registered in the system."])
+                ->withInput()
+                ->with('error', "Plate number \"{$existingVehicle->plate_number}\" is already registered in the system.");
+        }
+
+        // 3. Check against pending (awaiting approval) vehicles
+        $existingPending = PendingVehicle::whereIn('plate_number', $submittedPlates)
+            ->whereHas('pendingRegistration', fn ($q) => $q->where('status', 'pending'))
+            ->first();
+        if ($existingPending) {
+            return back()
+                ->withErrors(['vehicles' => "Plate number \"{$existingPending->plate_number}\" is already submitted and pending approval."])
+                ->withInput()
+                ->with('error', "Plate number \"{$existingPending->plate_number}\" is already submitted and pending approval.");
+        }
 
         session(['registration_vehicles' => $request->vehicles, 'registration_step' => 5]);
 
@@ -497,14 +539,7 @@ class RegisteredUserController extends Controller
             session(['registration_email' => strtolower($request->email)]);
         }
 
-        if ($request->has('password')) {
-            $request->validate(['password' => 'string|min:8']);
-            session(['registration_password' => $request->password]);
-        }
-
-        if ($request->has('password_confirmation')) {
-            session(['registration_password_confirmation' => $request->password_confirmation]);
-        }
+        // Do not persist passwords in session (even partial); credentials are hashed only on submit.
 
         return to_route('register');
     }
@@ -520,12 +555,12 @@ class RegisteredUserController extends Controller
         $vehicles = session('registration_vehicles');
         $roleTypeId = session('registration_role_type_id');
 
-        if (!$nameData || !$mainRole) {
+        if (! $nameData || ! $mainRole) {
             return to_route('register');
         }
 
         // Check if vehicles are registered
-        if (!session('registration_vehicles')) {
+        if (! session('registration_vehicles')) {
             return to_route('register');
         }
 
@@ -542,38 +577,12 @@ class RegisteredUserController extends Controller
         } else {
             $roleType = RoleType::firstOrCreate(
                 ['main_role' => $mainRole],
-                ['name' => $mainRole, 'description' => $mainRole . ' role']
+                ['name' => $mainRole, 'description' => $mainRole.' role']
             );
         }
 
         // Generate 6-digit verification code
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-        // Store in pending_registrations for ALL self-registering roles
-        $pendingData = array_merge($nameData, $roleSpecificData, [
-            'email' => $email,
-            'password' => Hash::make($request->password),
-            'role' => $mainRole,
-            'role_type_id' => $roleTypeId,
-            'status' => 'pending',
-            'email_verified' => false,
-            'verification_code' => $code,
-            'verification_code_expires_at' => now()->addMinutes(10),
-        ]);
-
-        $pending = PendingRegistration::updateOrCreate(
-            ['email' => $email],
-            $pendingData
-        );
-
-        // Store vehicles
-        foreach ($vehicles as $vehicleData) {
-            PendingVehicle::create([
-                'pending_registration_id' => $pending->id,
-                'vehicle_type_id' => $vehicleData['vehicle_type_id'],
-                'plate_number' => $vehicleData['plate_number'] ?? null,
-            ]);
-        }
 
         // Send verification email
         try {
@@ -582,9 +591,12 @@ class RegisteredUserController extends Controller
             // Continue even if email fails (for testing)
         }
 
+        // Store verification info in session instead of DB
         session([
-            'pending_registration_id' => $pending->id,
             'registration_email' => $email,
+            'registration_password_hash' => Hash::make($request->password),
+            'registration_verification_code' => $code,
+            'registration_verification_code_expires_at' => now()->addMinutes(10),
             'registration_step' => 6,
         ]);
 
@@ -603,18 +615,21 @@ class RegisteredUserController extends Controller
 
         $email = strtolower($request->email);
 
-        $pending = PendingRegistration::where('email', $email)->first();
-
-        if (!$pending) {
-            return back()->withErrors(['email' => 'No pending registration found for this email.']);
+        $savedEmail = session('registration_email');
+        if (! $savedEmail || $savedEmail !== $email) {
+            return back()->withErrors(['email' => 'No registration session found for this email.']);
         }
 
-        // Generate new code
-        $pending->generateVerificationCode();
+        // Generate new code in session
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        session([
+            'registration_verification_code' => $code,
+            'registration_verification_code_expires_at' => now()->addMinutes(10),
+        ]);
 
         // Send email
         try {
-            Mail::to($email)->send(new RegistrationVerificationCode($pending->verification_code, $email));
+            Mail::to($email)->send(new RegistrationVerificationCode($code, $email));
         } catch (\Exception $e) {
             // Continue
         }
@@ -634,21 +649,66 @@ class RegisteredUserController extends Controller
 
         $email = strtolower($request->email);
 
-        $pending = PendingRegistration::where('email', $email)->first();
+        $savedEmail = session('registration_email');
+        $savedCode = session('registration_verification_code');
+        $expiresAt = session('registration_verification_code_expires_at');
 
-        if (!$pending || !$pending->hasValidVerificationCode($request->code)) {
+        if (! $savedEmail || $savedEmail !== $email || $savedCode !== $request->code || ! $expiresAt || now()->isAfter($expiresAt)) {
             return back()->withErrors(['code' => 'Invalid or expired verification code.'])->withInput();
         }
 
-        // Mark email as verified
-        $pending->update([
+        // Now that email is verified, save to database
+        $nameData = session('registration_name');
+        $mainRole = session('registration_main_role');
+        $roleSpecificData = session('registration_role_specific');
+        $vehicles = session('registration_vehicles');
+        $roleTypeId = session('registration_role_type_id');
+        $passwordHash = session('registration_password_hash');
+        if (! $passwordHash || ! is_string($passwordHash)) {
+            return back()->withErrors(['code' => 'Your session expired. Please enter your credentials again.'])->withInput();
+        }
+
+        $pendingData = array_merge($nameData, $roleSpecificData, [
+            'email' => $email,
+            'password' => $passwordHash,
+            'role' => $mainRole,
+            'role_type_id' => $roleTypeId,
+            'status' => 'pending',
             'email_verified' => true,
-            'verification_code' => null,
-            'verification_code_expires_at' => null,
         ]);
 
-        // Clear session
-        session()->forget(['registration_name', 'registration_role_specific', 'registration_vehicles', 'registration_email']);
+        // Create Pending Registration
+        $pending = PendingRegistration::updateOrCreate(
+            ['email' => $email],
+            $pendingData
+        );
+
+        // Create Pending Vehicles
+        foreach ($vehicles as $vehicleData) {
+            PendingVehicle::create([
+                'pending_registration_id' => $pending->id,
+                'vehicle_type_id' => $vehicleData['vehicle_type_id'],
+                'plate_number' => $vehicleData['plate_number'] ?? null,
+            ]);
+        }
+
+        // Notify admins about the new registration
+        NotificationService::notifyNewRegistration($pending);
+
+        // Clear session (except for the 'completed recently' flag)
+        session()->forget([
+            'registration_main_role',
+            'registration_requires_approval',
+            'registration_role_type_id',
+            'registration_name',
+            'registration_role_specific',
+            'registration_vehicles',
+            'registration_email',
+            'registration_password_hash',
+            'registration_verification_code',
+            'registration_verification_code_expires_at',
+            'registration_step',
+        ]);
         session(['registration_completed_recently' => true]);
 
         // Redirect to pending approval page

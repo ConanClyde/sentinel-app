@@ -35,6 +35,7 @@ class ConfirmablePasswordController extends Controller
         }
 
         $request->session()->put('auth.password_confirmed_at', time());
+        $request->session()->forget('kiosk_mode');
 
         return to_route('dashboard');
     }

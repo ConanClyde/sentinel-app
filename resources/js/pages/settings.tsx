@@ -9,15 +9,15 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Settings, Bell, Moon, Shield, Palette, Monitor, Key, Save } from 'lucide-react';
+    ModalDrawer,
+    ModalDrawerContent,
+    ModalDrawerDescription,
+    ModalDrawerFooter,
+    ModalDrawerHeader,
+    ModalDrawerTitle,
+    ModalDrawerTrigger,
+} from '@/components/modal-drawer';
+import { Settings, Bell, Moon, Sun, Shield, Palette, Monitor, Key, Save } from 'lucide-react';
 import { useState } from 'react';
 import { useAppearance } from '@/hooks/use-appearance';
 
@@ -69,10 +69,10 @@ export default function SettingsPage() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Settings" />
-            <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 max-w-4xl mx-auto">
+            <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
                     <p className="text-muted-foreground text-sm">Manage your preferences and account settings</p>
                 </div>
 
@@ -96,7 +96,7 @@ export default function SettingsPage() {
                                     className="gap-1 h-10"
                                     onClick={() => updateAppearance('light')}
                                 >
-                                    <Moon className="h-4 w-4" />
+                                    <Sun className="h-4 w-4" />
                                     <span className="text-xs">Light</span>
                                 </Button>
                                 <Button
@@ -183,21 +183,21 @@ export default function SettingsPage() {
                                     Change your account password
                                 </p>
                             </div>
-                            <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
-                                <DialogTrigger asChild>
+                            <ModalDrawer open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+                                <ModalDrawerTrigger asChild>
                                     <Button variant="outline" size="sm" className="w-full sm:w-auto">
                                         <Key className="h-4 w-4 mr-2" />
                                         Change Password
                                     </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px] rounded-lg">
+                                </ModalDrawerTrigger>
+                                <ModalDrawerContent>
                                     <form onSubmit={handlePasswordSubmit}>
-                                        <DialogHeader>
-                                            <DialogTitle>Change Password</DialogTitle>
-                                            <DialogDescription>
+                                        <ModalDrawerHeader>
+                                            <ModalDrawerTitle>Change Password</ModalDrawerTitle>
+                                            <ModalDrawerDescription>
                                                 Enter your current password and choose a new one.
-                                            </DialogDescription>
-                                        </DialogHeader>
+                                            </ModalDrawerDescription>
+                                        </ModalDrawerHeader>
                                         <div className="grid gap-4 py-4">
                                             <div className="grid gap-2">
                                                 <Label htmlFor="current_password">Current Password</Label>
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                                                 />
                                             </div>
                                         </div>
-                                        <DialogFooter>
+                                        <ModalDrawerFooter>
                                             <Button type="button" variant="ghost" onClick={() => setPasswordDialogOpen(false)}>
                                                 Cancel
                                             </Button>
@@ -254,10 +254,10 @@ export default function SettingsPage() {
                                                 <Save className="h-4 w-4 mr-2" />
                                                 Save Changes
                                             </Button>
-                                        </DialogFooter>
+                                        </ModalDrawerFooter>
                                     </form>
-                                </DialogContent>
-                            </Dialog>
+                                </ModalDrawerContent>
+                            </ModalDrawer>
                         </div>
                         <Separator />
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -291,7 +291,7 @@ export default function SettingsPage() {
                                     Permanently delete your account and data
                                 </p>
                             </div>
-                            <Button variant="destructive" size="sm" className="w-full sm:w-auto">
+                            <Button variant="destructive" size="sm" className="w-full sm:w-auto text-white">
                                 Delete Account
                             </Button>
                         </div>

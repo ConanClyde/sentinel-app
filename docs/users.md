@@ -23,9 +23,8 @@ The system supports 7 user roles:
 ### Department
 | Name | Description |
 |------|-------------|
-| Chancellor | Chancellor of the institution |
+| Office of the Chancellor | The primary administrative unit for security oversight and incident management |
 | SAS | Student Affairs & Services |
-| Security Department | Security Department |
 | Marketing Department | Marketing Department |
 | DRRM | Disaster Risk Reduction and Management |
 | Planning Department | Planning Department |

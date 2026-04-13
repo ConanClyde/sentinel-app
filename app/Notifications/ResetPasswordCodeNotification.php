@@ -7,9 +7,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ResetPasswordCodeNotification extends Notification
+class ResetPasswordCodeNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    // Queue configuration
+    public $tries = 3;
+    public $maxExceptions = 2;
+    public $timeout = 120;
 
     /**
      * Create a new notification instance.

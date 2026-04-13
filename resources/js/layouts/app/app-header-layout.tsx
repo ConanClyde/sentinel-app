@@ -6,13 +6,14 @@ import { type BreadcrumbItem } from '@/types';
 interface AppHeaderLayoutProps {
     children: React.ReactNode;
     breadcrumbs?: BreadcrumbItem[];
+    fullWidth?: boolean;
 }
 
-export default function AppHeaderLayout({ children, breadcrumbs }: AppHeaderLayoutProps) {
+export default function AppHeaderLayout({ children, breadcrumbs, fullWidth }: AppHeaderLayoutProps) {
     return (
         <AppShell>
             <AppHeader breadcrumbs={breadcrumbs} />
-            <AppContent>{children}</AppContent>
+            <AppContent fullWidth={fullWidth}>{children}</AppContent>
         </AppShell>
     );
 }

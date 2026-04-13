@@ -6,7 +6,6 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 
 class PendingRegistration extends Model
 {
@@ -33,6 +32,7 @@ class PendingRegistration extends Model
         'student_id_image',
         // Staff specific
         'staff_id',
+        'staff_id_image',
         // Stakeholder specific
         'stakeholder_type',
         'student_school_id_image',
@@ -42,13 +42,37 @@ class PendingRegistration extends Model
         'verification_code_expires_at',
     ];
 
+    /**
+     * The attributes that should be appended to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['full_name'];
+
+    public function getFullNameAttribute(): string
+    {
+        $parts = [$this->first_name];
+
+        if ($this->middle_name) {
+            $parts[] = substr($this->middle_name, 0, 1).'.';
+        }
+
+        $parts[] = $this->surname;
+
+        if ($this->name_extension) {
+            $parts[] = $this->name_extension;
+        }
+
+        return implode(' ', $parts);
+    }
+
     protected function casts(): array
     {
         return [
             'approved_at' => 'datetime',
             'email_verified' => 'boolean',
             'verification_code_expires_at' => 'datetime',
-         ];
+        ];
     }
 
     public function roleType(): BelongsTo

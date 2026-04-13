@@ -1,21 +1,21 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type BreadcrumbItem, type SharedData, type User as AppUser } from '@/types';
 import { Head, usePage, useForm, router } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/user-avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+    ModalDrawer,
+    ModalDrawerContent,
+    ModalDrawerDescription,
+    ModalDrawerFooter,
+    ModalDrawerHeader,
+    ModalDrawerTitle,
+    ModalDrawerTrigger,
+} from '@/components/modal-drawer';
 import {
     Select,
     SelectContent,
@@ -31,9 +31,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Profile', href: route('profile') },
 ];
 
+interface ProfilePageProps extends SharedData {
+    mustVerifyEmail?: boolean;
+    nameExtensions?: { value: string; label: string }[];
+}
+
 export default function Profile() {
-    const { auth, nameExtensions = [] } = usePage<SharedData>().props as any;
-    const user = auth.user as any;
+    const { auth, nameExtensions = [] } = usePage<ProfilePageProps>().props;
+    const user = auth.user as AppUser;
     const [editDialogOpen, setEditDialogOpen] = useState(false);
 
     const { data, setData, patch, processing, errors, reset } = useForm({
@@ -92,28 +97,28 @@ export default function Profile() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile" />
-            <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 max-w-4xl mx-auto">
+            <div className="space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Profile</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
                         <p className="text-muted-foreground text-sm">View and manage your account information</p>
                     </div>
-                    <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-                        <DialogTrigger asChild>
+                    <ModalDrawer open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                        <ModalDrawerTrigger asChild>
                             <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto">
                                 <Edit className="h-4 w-4" />
                                 Edit Profile
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px] rounded-lg">
+                        </ModalDrawerTrigger>
+                        <ModalDrawerContent>
                             <form onSubmit={handleSubmit}>
-                                <DialogHeader>
-                                    <DialogTitle>Edit Profile</DialogTitle>
-                                    <DialogDescription>
+                                <ModalDrawerHeader>
+                                    <ModalDrawerTitle>Edit Profile</ModalDrawerTitle>
+                                    <ModalDrawerDescription>
                                         Update your personal information below.
-                                    </DialogDescription>
-                                </DialogHeader>
+                                    </ModalDrawerDescription>
+                                </ModalDrawerHeader>
                                 <div className="grid gap-4 py-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="first_name">First Name</Label>
@@ -177,7 +182,7 @@ export default function Profile() {
                                         {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                                     </div>
                                 </div>
-                                <DialogFooter>
+                                <ModalDrawerFooter>
                                     <Button type="button" variant="ghost" onClick={() => setEditDialogOpen(false)}>
                                         Cancel
                                     </Button>
@@ -185,23 +190,19 @@ export default function Profile() {
                                         <Save className="h-4 w-4 mr-2" />
                                         Save Changes
                                     </Button>
-                                </DialogFooter>
+                                </ModalDrawerFooter>
                             </form>
-                        </DialogContent>
-                    </Dialog>
+                        </ModalDrawerContent>
+                    </ModalDrawer>
                 </div>
 
                 {/* Profile Card */}
                 <Card className="border-border">
                     <CardHeader className="pb-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                            <Avatar className="h-20 w-20 rounded-full">
-                                <AvatarFallback className="rounded-full text-2xl font-bold bg-primary/10 text-primary">
-                                    {user?.first_name?.charAt(0).toUpperCase() || 'U'}
-                                </AvatarFallback>
-                            </Avatar>
+                        <div className="flex items-center gap-4 text-left">
+                            <UserAvatar user={user} size="xl" />
                             <div className="flex-1">
-                                <CardTitle className="text-xl">{getFullName()}</CardTitle>
+                                <CardTitle className="text-xl leading-tight">{getFullName()}</CardTitle>
                                 <CardDescription className="mt-1">{user?.email}</CardDescription>
                                 <Badge className="mt-2" variant={getRoleBadgeVariant(user?.role)}>
                                     {user?.role}
@@ -221,7 +222,7 @@ export default function Profile() {
                         <CardDescription>Your personal details</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">First Name</label>
                                 <p className="text-sm font-medium mt-1">{user?.first_name || '-'}</p>
@@ -240,22 +241,22 @@ export default function Profile() {
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">Email Address</label>
-                                <p className="text-sm font-medium mt-1 flex items-center gap-2">
-                                    <Mail className="h-3 w-3" />
-                                    {user?.email}
+                                <p className="text-sm font-medium mt-1 flex items-center gap-2 truncate">
+                                    <Mail className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                    <span className="truncate">{user?.email}</span>
                                 </p>
                             </div>
                             <div>
                                 <label className="text-sm font-medium text-muted-foreground">Role</label>
                                 <p className="text-sm font-medium mt-1 flex items-center gap-2">
-                                    <Shield className="h-3 w-3" />
+                                    <Shield className="h-4 w-4 shrink-0 text-muted-foreground" />
                                     {user?.role}
                                 </p>
                             </div>
-                            <div className="sm:col-span-2">
+                            <div className="col-span-2">
                                 <label className="text-sm font-medium text-muted-foreground">Member Since</label>
                                 <p className="text-sm font-medium mt-1 flex items-center gap-2">
-                                    <Calendar className="h-3 w-3" />
+                                    <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
                                     {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                                 </p>
                             </div>

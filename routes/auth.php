@@ -21,36 +21,45 @@ Route::middleware('guest')->group(function () {
 
     // POST routes for form submissions
     Route::post('register/role', [RegisteredUserController::class, 'storeRoleSelection'])
+        ->middleware('throttle:3,1')
         ->name('register.store-role');
 
     Route::post('register/role-type', [RegisteredUserController::class, 'storeRoleTypeSelection'])
+        ->middleware('throttle:3,1')
         ->name('register.store-role-type');
 
     Route::post('register/name', [RegisteredUserController::class, 'storeName'])
+        ->middleware('throttle:3,1')
         ->name('register.store-name');
 
     Route::post('register/role-specific', [RegisteredUserController::class, 'storeRoleSpecificFields'])
+        ->middleware('throttle:3,1')
         ->name('register.store-role-specific');
 
     Route::post('register/vehicles', [RegisteredUserController::class, 'storeVehicles'])
+        ->middleware('throttle:3,1')
         ->name('register.store-vehicles');
 
     Route::post('register/credentials/save', [RegisteredUserController::class, 'savePartialCredentials'])
+        ->middleware('throttle:3,1')
         ->name('register.save-credentials');
 
     Route::post('register/credentials', [RegisteredUserController::class, 'storeCredentials'])
+        ->middleware('throttle:3,1')
         ->name('register.store-credentials');
 
     Route::post('register/resend-code', [RegisteredUserController::class, 'resendCode'])
+        ->middleware('throttle:3,1')
         ->name('register.resend-code');
 
     Route::post('register/verify', [RegisteredUserController::class, 'verifyCode'])
+        ->middleware('throttle:5,1')
         ->name('register.verify-code');
 
     // Registration file serving (temporary signed URL with session validation)
     Route::get('register/files/{path}', function ($path) {
         // Security: Must have active registration session
-        if (!session()->has('registration_main_role')) {
+        if (! session()->has('registration_main_role')) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -59,7 +68,7 @@ Route::middleware('guest')->group(function () {
         $path = str_replace('|', '/', $path);
 
         // Security: Only allow files from registrations directory
-        if (!str_starts_with($path, 'registrations/')) {
+        if (! str_starts_with($path, 'registrations/')) {
             abort(403, 'Access denied.');
         }
 
@@ -68,20 +77,21 @@ Route::middleware('guest')->group(function () {
             abort(403, 'Invalid path.');
         }
 
-        if (!Storage::disk('private')->exists($path)) {
+        if (! Storage::disk('private')->exists($path)) {
             abort(404, 'File not found.');
         }
 
         return Storage::disk('private')->response($path);
     })->middleware(['signed'])
-      ->where('path', '.*')
-      ->name('register.files.show');
+        ->where('path', '.*')
+        ->name('register.files.show');
 
     // Pending Approval (separate URL since it's after verification)
     Route::get('register/pending-approval', function () {
-        if (!session('registration_completed_recently')) {
+        if (! session('registration_completed_recently')) {
             return redirect()->route('register');
         }
+
         return Inertia\Inertia::render('auth/pending-approval');
     })->name('register.pending-approval');
 

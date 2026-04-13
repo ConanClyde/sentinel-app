@@ -1,5 +1,4 @@
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
-import AppLogoIcon from '@/components/app-logo-icon';
 import { Button } from '@/components/ui/button';
 import { useFlashToast } from '@/hooks/use-flash-toast';
 import { Link } from '@inertiajs/react';
@@ -21,31 +20,23 @@ export default function AuthSimpleLayout({ children, title, description, backHre
 
     return (
         <div className="bg-background flex min-h-screen flex-col items-center justify-center overflow-y-auto p-6 lg:p-8 pb-[env(safe-area-inset-bottom)] lg:justify-center">
-            {/* Back/Home button - fixed position for mobile */}
+            {/* Back/Home button */}
             <div className="fixed left-4 top-4 z-50 md:left-6 md:top-6">
-                <Link href={backHref || route('home')}>
+                <Link href={backHref || route('welcome')}>
                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-md">
                         {showHomeIcon ? <Home className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
                     </Button>
                 </Link>
             </div>
 
-            {/* Theme toggle - fixed position for mobile */}
+            {/* Theme toggle */}
             <div className="fixed right-4 top-4 z-50 md:right-6 md:top-6">
                 <AppearanceToggleDropdown />
             </div>
 
-            {/* Main content container */}
+            {/* Main content */}
             <div className="flex w-full max-w-sm flex-col gap-6 py-8">
-                {/* Logo and title section */}
                 <div className="flex flex-col items-center gap-4">
-                    <Link href={route('home')} className="flex flex-col items-center gap-2 font-medium">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 transition-transform active:scale-95">
-                            <AppLogoIcon className="size-7 fill-current text-[var(--foreground)] dark:text-white" />
-                        </div>
-                        <span className="sr-only">Sentinel Home</span>
-                    </Link>
-
                     <div className="space-y-1.5 text-center w-full">
                         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
                         <p className="text-muted-foreground text-sm">{description}</p>
@@ -57,7 +48,6 @@ export default function AuthSimpleLayout({ children, title, description, backHre
                     </div>
                 </div>
 
-                {/* Form content */}
                 <div className="flex flex-col">{children}</div>
             </div>
         </div>

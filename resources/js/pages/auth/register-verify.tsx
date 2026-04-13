@@ -1,6 +1,7 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,16 @@ export default function RegisterVerify() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('register.verify-code'));
+        post(route('register.verify-code'), {
+            onSuccess: () => {},
+            onError: (errors) => {
+                if (errors.code) {
+                    toast.error(errors.code);
+                } else {
+                    toast.error('Invalid or expired code. Please try again.');
+                }
+            },
+        });
     };
 
     return (
@@ -109,7 +119,7 @@ export default function RegisterVerify() {
                     </div>
 
                     <Button type="submit" className="h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing || data.code.length !== 6}>
-                        {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
+                        {processing && <LoaderCircle className="h-5 w-5 animate-spin mr-2" />}
                         Verify
                     </Button>
 
@@ -122,6 +132,8 @@ export default function RegisterVerify() {
                                 setResending(true);
                                 router.post(route('register.resend-code'), { email: data.email }, {
                                     preserveScroll: true,
+                                    onSuccess: () => {},
+                                    onError: () => toast.error('Failed to resend code. Please try again.'),
                                     onFinish: () => setResending(false),
                                 });
                             }}

@@ -14,6 +14,7 @@ class RegistrationCode extends Model
         'surname',
         'name_extension',
         'password',
+        'role_type_id',
     ];
 
     public $timestamps = false;

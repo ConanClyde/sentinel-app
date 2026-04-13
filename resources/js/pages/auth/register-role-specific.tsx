@@ -442,7 +442,7 @@ export default function RegisterRoleSpecific({ role, colleges, savedData }: Regi
                     </div>
 
                     <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" disabled={processing}>
-                        {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
+                        {processing && <LoaderCircle className="h-5 w-5 animate-spin mr-2" />}
                         Continue
                     </Button>
                 </div>

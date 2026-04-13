@@ -1,6 +1,7 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -19,25 +20,21 @@ interface CredentialsForm {
 
 interface RegisterCredentialsProps {
     savedEmail?: string;
-    savedPassword?: string;
-    savedPasswordConfirmation?: string;
 }
 
-export default function RegisterCredentials({ savedEmail, savedPassword, savedPasswordConfirmation }: RegisterCredentialsProps) {
+export default function RegisterCredentials({ savedEmail }: RegisterCredentialsProps) {
     const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const { data, setData, post, processing, errors } = useForm<CredentialsForm>({
         email: savedEmail || '',
-        password: savedPassword || '',
-        password_confirmation: savedPasswordConfirmation || '',
+        password: '',
+        password_confirmation: '',
     });
 
-    // Sync from session when navigating back
+    // Sync email from session when navigating back (password fields are never stored server-side).
     useEffect(() => {
         if (savedEmail) setData('email', savedEmail);
-        if (savedPassword) setData('password', savedPassword);
-        if (savedPasswordConfirmation) setData('password_confirmation', savedPasswordConfirmation);
-    }, [savedEmail, savedPassword, savedPasswordConfirmation]);
+    }, [savedEmail]);
 
     // Save credentials to session when user types (debounced)
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,32 +50,21 @@ export default function RegisterCredentials({ savedEmail, savedPassword, savedPa
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const password = e.target.value;
-        setData('password', password);
-
-        if (saveTimeout.current) clearTimeout(saveTimeout.current);
-        if (password.length >= 8) {
-            saveTimeout.current = setTimeout(() => {
-                router.post(route('register.save-credentials'), { password }, { replace: true });
-            }, 1000);
-        }
+        setData('password', e.target.value);
     };
 
     const handlePasswordConfirmationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const password_confirmation = e.target.value;
-        setData('password_confirmation', password_confirmation);
-
-        if (saveTimeout.current) clearTimeout(saveTimeout.current);
-        if (password_confirmation) {
-            saveTimeout.current = setTimeout(() => {
-                router.post(route('register.save-credentials'), { password_confirmation }, { replace: true });
-            }, 1000);
-        }
+        setData('password_confirmation', e.target.value);
     };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('register.store-credentials'));
+        post(route('register.store-credentials'), {
+            onError: (errors) => {
+                const firstError = Object.values(errors)[0];
+                toast.error(firstError || 'Please check the information provided.');
+            },
+        });
     };
 
     const passwordStrength = () => {
@@ -169,7 +155,7 @@ export default function RegisterCredentials({ savedEmail, savedPassword, savedPa
                     </div>
 
                     <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" tabIndex={4} disabled={processing}>
-                        {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
+                        {processing && <LoaderCircle className="h-5 w-5 animate-spin mr-2" />}
                         Continue
                     </Button>
                 </div>

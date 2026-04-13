@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use App\Enums\NameExtension;
+use App\Enums\Permission;
 use App\Enums\UserRole;
+use App\Services\RolePermissionService;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -30,12 +32,14 @@ class User extends Authenticatable
         'password',
         'role',
         'role_type_id',
+        'department_id',
         // Student specific
         'college_id',
         'program_id',
         'student_id',
         // Staff specific
         'staff_id',
+        'staff_id_image',
         // Stakeholder specific
         'stakeholder_type',
         // Common optional
@@ -43,6 +47,8 @@ class User extends Authenticatable
         'license_image',
         'face_scan_data',
         'student_id_image',
+        // Expiration
+        'expiration_date',
     ];
 
     /**
@@ -50,7 +56,15 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $appends = ['role', 'role_name'];
+    protected $appends = ['role', 'role_name', 'avatar', 'permissions'];
+
+    /**
+     * Get the avatar URL.
+     */
+    public function getAvatarAttribute(): ?string
+    {
+        return null;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -118,6 +132,11 @@ class User extends Authenticatable
         return $this->belongsTo(RoleType::class);
     }
 
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(RoleType::class, 'department_id');
+    }
+
     public function college(): BelongsTo
     {
         return $this->belongsTo(College::class);
@@ -131,6 +150,21 @@ class User extends Authenticatable
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->where('is_read', false)->count();
+    }
+
+    public function patrolLogs(): HasMany
+    {
+        return $this->hasMany(PatrolLog::class, 'security_user_id');
     }
 
     public function getRoleAttribute(): ?UserRole
@@ -172,5 +206,18 @@ class User extends Authenticatable
     public function isGuardian(): bool
     {
         return $this->isStakeholder() && $this->stakeholder_type === 'Guardian';
+    }
+
+    public function hasPermission(string|Permission $permission): bool
+    {
+        $permissions = $this->permissions;
+        $permissionEnum = is_string($permission) ? Permission::tryFrom($permission) : $permission;
+
+        return in_array($permissionEnum, $permissions, true);
+    }
+
+    public function getPermissionsAttribute(): array
+    {
+        return RolePermissionService::getPermissionsForUser($this);
     }
 }

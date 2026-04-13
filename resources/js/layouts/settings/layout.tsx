@@ -37,7 +37,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 <aside className="lg:w-64">
                     <nav className="flex flex-col gap-1.5">
                         {sidebarNavItems.map((item) => {
-                            const isActiveRoute = 
+                            const isActiveRoute =
                                 (item.title === 'Profile Content' && route().current('profile.edit')) ||
                                 (item.title === 'Security' && route().current('password.edit')) ||
                                 (item.title === 'App Appearance' && route().current('appearance'));
@@ -49,8 +49,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                                     prefetch
                                     className={cn(
                                         'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all group',
-                                        isActiveRoute 
-                                            ? 'bg-primary text-primary-foreground' 
+                                        isActiveRoute
+                                            ? 'bg-primary text-primary-foreground'
                                             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                     )}
                                 >
@@ -62,7 +62,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                     </nav>
                 </aside>
 
-                <div className="flex-1 lg:max-w-3xl">
+                <div className="flex-1 lg:max-w-4xl">
                     <section className="animate-in fade-in slide-in-from-bottom-2 duration-500">
                         {children}
                     </section>

@@ -2,6 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Notification;
+use App\Models\PendingRegistration;
+use App\Models\VehicleViolation;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -43,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()?->setVisible(['id', 'first_name', 'surname', 'name', 'email', 'role', 'permissions']),
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),
@@ -51,6 +54,22 @@ class HandleInertiaRequests extends Middleware
                 'warning' => $request->session()->get('warning'),
                 'info' => $request->session()->get('info'),
             ],
+            'pendingApprovalsCount' => $request->user() && $request->user()->isAdministrator()
+                ? PendingRegistration::where('status', 'pending')->where('email_verified', true)->count()
+                : 0,
+            'pendingReportsCount' => $request->user() && $request->user()->isAdministrator()
+                ? VehicleViolation::where('status', 'pending')->count()
+                : 0,
+            'myPendingReportsCount' => $request->user()
+                ? VehicleViolation::where('reported_by', $request->user()->id)
+                    ->whereIn('status', ['pending', 'approved'])
+                    ->count()
+                : 0,
+            'unreadNotificationCount' => $request->user()
+                ? Notification::where('user_id', $request->user()->id)
+                    ->where('is_read', false)
+                    ->count()
+                : 0,
         ]);
     }
 }

@@ -14,6 +14,7 @@ export interface FlashMessages {
     error?: string;
     warning?: string;
     info?: string;
+    status?: string;
 }
 
 export interface NavGroup {
@@ -26,6 +27,7 @@ export interface NavItem {
     url: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    badge?: number | string;
 }
 
 export interface SharedData {
@@ -33,6 +35,10 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     flash?: FlashMessages;
+    pendingApprovalsCount: number;
+    pendingReportsCount: number;
+    myPendingReportsCount: number;
+    unreadNotificationCount: number;
     [key: string]: unknown;
 }
 
@@ -44,9 +50,10 @@ export interface User {
     name_extension?: string;
     name: string;
     email: string;
+    role: string;
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    permissions?: string[];
 }

@@ -53,7 +53,7 @@ export default function RegisterRole({ mainRoles, savedMainRole }: RegisterRoleP
     };
 
     return (
-        <AuthLayout title="Select Your Role" description="Choose your role to get started" backHref={route('home')} showHomeIcon>
+        <AuthLayout title="Select Your Role" description="Choose your role to get started" backHref={route('welcome')} showHomeIcon>
             <Head title="Select Role" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <Alert className="bg-yellow-50 border-yellow-200 text-yellow-800 py-2 text-sm">
@@ -95,7 +95,7 @@ export default function RegisterRole({ mainRoles, savedMainRole }: RegisterRoleP
                     className="h-10 w-full rounded-lg transition-all active:scale-[0.98]"
                     disabled={processing || !data.main_role}
                 >
-                    {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
+                    {processing && <LoaderCircle className="h-5 w-5 animate-spin mr-2" />}
                     Continue
                 </Button>
 

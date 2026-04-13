@@ -29,6 +29,7 @@ return new class extends Migration
 
             // Staff specific
             $table->string('staff_id')->nullable();
+            $table->string('staff_id_image')->nullable();
 
             // Stakeholder specific
             $table->string('stakeholder_type')->nullable();

@@ -47,7 +47,7 @@ export default function ErrorPage({ status }: { status: number }) {
                     </p>
                     <div className="flex flex-col gap-4">
                         <Button asChild className="w-full h-11">
-                            <Link href={route('home')}>
+                            <Link href={route('dashboard')}>
                                 Return
                             </Link>
                         </Button>

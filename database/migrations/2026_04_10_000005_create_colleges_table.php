@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->string('type')->default('college');
             $table->timestamps();
         });
     }

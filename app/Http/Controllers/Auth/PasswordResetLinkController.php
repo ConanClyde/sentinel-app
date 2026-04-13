@@ -9,6 +9,7 @@ use App\Notifications\ResetPasswordCodeNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,7 +26,7 @@ class PasswordResetLinkController extends Controller
     /**
      * Handle an incoming password reset link request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -37,7 +38,7 @@ class PasswordResetLinkController extends Controller
 
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['email' => 'This email is not registered in our system.']);
         }
 
@@ -58,13 +59,14 @@ class PasswordResetLinkController extends Controller
         try {
             $user->notify(new ResetPasswordCodeNotification($code));
         } catch (\Exception $e) {
-            Log::error('Failed to send password reset email: ' . $e->getMessage());
+            Log::error('Failed to send password reset email: '.$e->getMessage());
+
             return back()->withErrors(['email' => 'Failed to send email. Please check SMTP configuration.']);
         }
 
         // Store email in session for security
         session(['password_reset_email' => $email]);
 
-        return to_route('password.reset');
+        return to_route('password.reset')->with('success', 'Password reset code has been sent to your email.');
     }
 }

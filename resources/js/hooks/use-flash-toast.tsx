@@ -12,6 +12,9 @@ export function useFlashToast() {
         if (flash?.success) {
             toast.success(flash.success);
         }
+        if (flash?.status) {
+            toast.success(flash.status);
+        }
         if (flash?.error) {
             toast.error(flash.error);
         }

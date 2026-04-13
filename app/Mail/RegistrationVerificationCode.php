@@ -10,12 +10,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class RegistrationVerificationCode extends Mailable
+class RegistrationVerificationCode extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public string $code;
     public string $email;
+
+    // Queue configuration
+    public $tries = 3;
+    public $maxExceptions = 2;
+    public $timeout = 120;
 
     /**
      * Create a new message instance.

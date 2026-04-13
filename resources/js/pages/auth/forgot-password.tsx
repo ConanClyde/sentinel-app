@@ -2,6 +2,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -18,11 +19,20 @@ export default function ForgotPassword() {
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('password.email'));
+        post(route('password.email'), {
+            onSuccess: () => {},
+            onError: (errors) => {
+                if (errors.email) {
+                    toast.error(errors.email);
+                } else {
+                    toast.error('Failed to send reset code. Please try again.');
+                }
+            },
+        });
     };
 
     return (
-        <AuthLayout title="Forgot password" description="Enter your email to receive a password reset code" backHref={route('home')} showHomeIcon>
+        <AuthLayout title="Forgot password" description="Enter your email to receive a password reset code" backHref={route('welcome')} showHomeIcon>
             <Head title="Forgot password" />
 
             <div className="flex flex-col gap-6">

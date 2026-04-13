@@ -20,7 +20,7 @@ export default function AppearanceToggleDropdown({ className = '', ...props }: H
 
     return (
         <div className={className} {...props}>
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-9 w-9 rounded-md">
                         {getCurrentIcon()}

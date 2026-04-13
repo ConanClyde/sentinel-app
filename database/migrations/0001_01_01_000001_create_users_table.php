@@ -28,13 +28,14 @@ return new class extends Migration
             $table->foreignId('role_type_id')->nullable()->constrained('role_types')->onDelete('set null');
 
             // Student specific
-            $table->foreignId('college_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('program_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('college_id')->nullable();
+            $table->unsignedBigInteger('program_id')->nullable();
             $table->string('student_id')->nullable();
             $table->string('student_id_image')->nullable();
 
             // Staff specific
             $table->string('staff_id')->nullable();
+            $table->string('staff_id_image')->nullable();
 
             // Stakeholder specific
             $table->string('stakeholder_type')->nullable();

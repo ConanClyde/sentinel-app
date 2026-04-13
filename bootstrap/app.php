@@ -1,28 +1,39 @@
 <?php
 
-use App\Http\Middleware\HandleInertiaRequests;
-use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\ClearRegistrationSession;
+use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\KioskMode;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
+        channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Add this line here:
-        $middleware->trustProxies(at: '*');
+        $trusted = env('TRUSTED_PROXIES', '*');
+        if ($trusted === null || $trusted === '' || $trusted === '*') {
+            $middleware->trustProxies(at: '*');
+        } else {
+            $middleware->trustProxies(at: array_values(array_filter(array_map('trim', explode(',', $trusted)))));
+        }
+
+        $middleware->redirectUsersTo('/dashboard');
 
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'kiosk' => KioskMode::class,
+            'permission' => PermissionMiddleware::class,
         ]);
         $middleware->web(append: [
             HandleInertiaRequests::class,

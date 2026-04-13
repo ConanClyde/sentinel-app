@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,13 @@ export default function ResetPassword() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.store'));
+        post(route('password.store'), {
+            onSuccess: () => {},
+            onError: (errors) => {
+                const firstError = Object.values(errors)[0];
+                toast.error(firstError || 'Technical error occurred while resetting password.');
+            },
+        });
     };
 
     const passwordStrength = () => {

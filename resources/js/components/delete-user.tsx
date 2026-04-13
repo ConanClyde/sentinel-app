@@ -35,26 +35,26 @@ export default function DeleteUser() {
     return (
         <div className="space-y-6 pt-8 border-t border-muted/30">
             <HeadingSmall title="Security Zone: Delete Account" description="Deleting your account is a permanent action that removes all associated vehicle registries and credentials." />
-            
+
             <div className="group relative space-y-4 rounded-xl border border-red-200/50 bg-red-50/50 p-6 dark:border-red-500/10 dark:bg-red-500/5 overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                     <X className="h-24 w-24 text-red-500" />
                 </div>
-                
+
                 <div className="relative space-y-2">
                     <p className="font-black uppercase tracking-[0.2em] text-xs text-red-600 dark:text-red-500 flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4" />
                         Critical Security Alert
                     </p>
                     <p className="text-sm font-medium text-muted-foreground leading-relaxed max-w-md">
-                        Once your account is purged, all of its digital assets, verified IDs, and registration history will be 
+                        Once your account is purged, all of its digital assets, verified IDs, and registration history will be
                         <span className="text-foreground font-bold italic ml-1 underline decoration-red-500/30">deleted forever</span>.
                     </p>
                 </div>
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button variant="destructive" className="h-10 px-8 rounded-xl font-black uppercase tracking-widest text-[10px]">
+                        <Button variant="destructive" className="h-10 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] text-white">
                             Initialize Account Purge
                         </Button>
                     </DialogTrigger>
@@ -96,7 +96,7 @@ export default function DeleteUser() {
                                     </Button>
                                 </DialogClose>
 
-                                <Button variant="destructive" disabled={processing} className="font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl" asChild>
+                                <Button variant="destructive" disabled={processing} className="font-black uppercase tracking-widest text-[10px] h-11 px-8 rounded-xl text-white" asChild>
                                     <button type="submit">Execute Purge</button>
                                 </Button>
                             </DialogFooter>

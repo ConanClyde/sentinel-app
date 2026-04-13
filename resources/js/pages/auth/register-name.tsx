@@ -139,7 +139,7 @@ export default function RegisterName({ nameExtensions, selectedRole, savedName }
                     </div>
 
                     <Button type="submit" className="mt-2 h-10 w-full rounded-lg transition-all active:scale-[0.98]" tabIndex={5} disabled={processing}>
-                        {processing && <LoaderCircle className="h-5 w-5 animate-spin" />}
+                        {processing && <LoaderCircle className="h-5 w-5 animate-spin mr-2" />}
                         Continue
                     </Button>
                 </div>

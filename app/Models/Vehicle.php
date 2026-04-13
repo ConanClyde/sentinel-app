@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vehicle extends Model
 {
@@ -15,12 +16,14 @@ class Vehicle extends Model
         'sticker_color_id',
         'qr_code_path',
         'is_active',
+        'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'expires_at' => 'datetime',
         ];
     }
 
@@ -37,5 +40,13 @@ class Vehicle extends Model
     public function stickerColor(): BelongsTo
     {
         return $this->belongsTo(StickerColor::class);
+    }
+
+    /**
+     * Get the violations for this vehicle.
+     */
+    public function violations(): HasMany
+    {
+        return $this->hasMany(VehicleViolation::class);
     }
 }

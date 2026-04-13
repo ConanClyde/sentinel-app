@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RoleType extends Model
@@ -28,5 +28,11 @@ class RoleType extends Model
     public function requiresApproval(): bool
     {
         return $this->getMainRoleEnum()->requiresApproval();
+    }
+
+    public function privileges(): BelongsToMany
+    {
+        return $this->belongsToMany(Privilege::class, 'department_privilege')
+            ->withTimestamps();
     }
 }

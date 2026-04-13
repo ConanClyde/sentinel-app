@@ -10,21 +10,31 @@ export default function PendingApproval() {
         <AuthLayout 
             title="Account Under Review" 
             description="Your registration has been successfully submitted. We are currently reviewing your details and you will receive an email notification once an administrator approves your account." 
-            backHref={route('home')}
+            backHref={route('welcome')}
+            showHomeIcon
         >
             <Head title="Pending Approval" />
-            
-            <div className="flex flex-col gap-6 mt-4">
-                <div className="flex items-center justify-center rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800 dark:border-yellow-900/50 dark:bg-yellow-900/10 dark:text-yellow-500">
-                    <Clock className="mr-2 h-4 w-4 shrink-0" />
-                    <span className="font-medium">Pending administrator action</span>
+
+            <div className="flex flex-col gap-8 py-4">
+                <div className="flex flex-col gap-3 text-center">
+                    <div className="flex justify-center">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                            <Clock className="h-10 w-10 text-primary animate-pulse" />
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold tracking-tight">Registration Received</h2>
+                    <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                        Your application is currently being reviewed by our administration team.
+                    </p>
                 </div>
 
-                <Button asChild variant="secondary" className="w-full h-10">
-                    <Link href={route('home')}>
-                        Return to Home
-                    </Link>
-                </Button>
+                <div className="grid gap-4">
+                    <Button asChild variant="outline" className="h-11 font-medium">
+                        <Link href={route('welcome')}>
+                            Return to Home
+                        </Link>
+                    </Button>
+                </div>
             </div>
         </AuthLayout>
     );

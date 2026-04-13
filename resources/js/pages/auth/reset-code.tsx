@@ -1,6 +1,7 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,15 @@ export default function ResetCode() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.verify-code'));
+        post(route('password.verify-code'), {
+            onError: (errors) => {
+                if (errors.code) {
+                    toast.error(errors.code);
+                } else {
+                    toast.error('Invalid or expired code. Please try again.');
+                }
+            },
+        });
     };
 
     return (
@@ -116,6 +125,8 @@ export default function ResetCode() {
                                 setResending(true);
                                 router.post(route('password.resend-code'), { email: data.email }, {
                                     preserveScroll: true,
+                                    onSuccess: () => {},
+                                    onError: () => toast.error('Failed to resend code. Please try again.'),
                                     onFinish: () => setResending(false),
                                 });
                             }}

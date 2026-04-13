@@ -34,12 +34,13 @@ export default function Login({ canResetPassword }: LoginProps) {
         e.preventDefault();
         post(route('login'), {
             onSuccess: () => toast.success('Logged in successfully!'),
+            onError: () => toast.error('Invalid credentials. Please check your email and password.'),
             onFinish: () => reset('password'),
         });
     };
 
     return (
-        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in" backHref={route('home')} showHomeIcon>
+        <AuthLayout title="Log in to your account" description="Enter your email and password below to log in" backHref={route('welcome')} showHomeIcon>
             <Head title="Log in" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
